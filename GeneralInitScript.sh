@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 echo "## Starting General Initialization Script"
 echo "## Installing Updates"
 sudo apt-get update
