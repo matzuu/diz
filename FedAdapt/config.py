@@ -1,7 +1,7 @@
 import sys
 
 # Network configration
-SERVER_ADDR= '143.205.173.100'#'192.168.0.10'
+SERVER_ADDR= '143.205.173.100' #Server-internal = 172.20.2.75            original'192.168.0.10'
 SERVER_PORT = 51000
 
 K = 5 # Number of devices
