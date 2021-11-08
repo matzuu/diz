@@ -4,6 +4,7 @@ echo "## Installing Updates"
 sudo apt-get update
 echo "## Installing Python"
 sudo apt --assume-yes install python3.8-venv
+chmod +x Start_FL_training_Client.sh
 cd FedAdapt
 echo "## Creating python venv"
 python3 -m venv venv
