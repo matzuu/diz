@@ -68,19 +68,12 @@ class Client(Communicator):
 		self.net.to(self.device)
 		self.net.train()
 		if self.split_layer == (config.model_len -1): # No offloading training
-			logger.info('## DEBUG: Got in No Offloading if')
 			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)):
-				logger.info('## DEBUG: Got here')
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
-				logger.info('## DEBUG: Got here2')
 				self.optimizer.zero_grad()
-				logger.info('## DEBUG: Got here3')
 				outputs = self.net(inputs)
-				logger.info('## DEBUG: Got here4')				
 				loss = self.criterion(outputs, targets)
-				logger.info('## DEBUG: Got here5')
 				loss.backward()
-				logger.info('## DEBUG: Got here6')
 				self.optimizer.step()
 				logger.info('## DEBUG: Got here7')
 				
