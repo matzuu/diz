@@ -8,7 +8,7 @@ K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-HOST2IP = {'edge-device-1':'143.205.173.117' , 'edge-device-2':'143.205.173.105' , 'edge-device-3':'143.205.173.120' , 'edge-device-4':'143.205.173.119' , 'nishant-test':'gpu3.itec.aau.at'}
+HOST2IP = {'edge-device-1':'143.205.173.117' , 'edge-device-2':'143.205.173.105' , 'edge-device-3':'143.205.173.120' , 'edge-device-4':'143.205.173.119' , 'gpu3':'gpu3.itec.aau.at'}
 CLIENTS_CONFIG= {'143.205.173.117':0 , '143.205.173.105':1, '143.205.173.120':2, '143.205.173.119':3, 'gpu3.itec.aau.at':4}
 CLIENTS_LIST= ['143.205.173.117' , '143.205.173.105' , '143.205.173.120' , '143.205.173.119' , 'gpu3.itec.aau.at'] 
 
