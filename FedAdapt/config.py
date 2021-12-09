@@ -1,16 +1,16 @@
 import sys
 
 # Network configration
-SERVER_ADDR = '172.25.185.251' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' 
+SERVER_ADDR = '194.182.176.93' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' 
 SERVER_PORT = 51000
 
 K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-HOST2IP = {'VM-Exoscale-Tiny2':'172.25.42.213' , 'VM-Exoscale-Tiny':'172.25.250.116' , 'VM-Exoscale-Small':'172.25.173.201' , 'gpu1':'143.205.173.64' , 'gpu3':'143.205.173.65'}
-CLIENTS_CONFIG= {'172.25.42.213':0 , '172.25.250.116':1, '172.25.173.201':2, '143.205.173.64':3, '143.205.173.65':4}
-CLIENTS_LIST= ['172.25.42.213' , '172.25.250.116' , '172.25.173.201' , '143.205.173.64' , '143.205.173.65'] 
+HOST2IP = {'VM-Exoscale-Tiny2':'159.100.245.40' , 'VM-Exoscale-Tiny':'89.145.162.63' , 'VM-Exoscale-Small':'194.182.176.93' , 'gpu1':'143.205.173.64' , 'gpu3':'143.205.173.65'}
+CLIENTS_CONFIG= {'159.100.245.40':0 , '89.145.162.63':1, '194.182.176.93':2, '143.205.173.64':3, '143.205.173.65':4}
+CLIENTS_LIST= ['159.100.245.40' , '89.145.162.63' , '194.182.176.93' , '143.205.173.64' , '143.205.173.65'] 
 
 # Dataset configration
 dataset_name = 'CIFAR10'
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {'172.25.42.213': 5 , '172.25.250.116': 5, '172.25.173.201': 5, '143.205.173.64': 5, '143.205.173.65': 5}  # infer times for each device
+iteration = {'159.100.245.40': 5 , '89.145.162.63': 5, '194.182.176.93': 5, '143.205.173.64': 50, '143.205.173.65': 50}  # infer times for each device
 
 random = True
 random_seed = 0

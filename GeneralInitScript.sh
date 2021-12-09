@@ -9,7 +9,7 @@ sudo apt --assume-yes install make
 chmod +x Start_FL_training_Client.sh
 export USE_CUDA=0
 export USE_ROCM=0
-sudo apt --assume-yes install python3.8-venv
+
 
 #echo "## Installing Conda"
 #mkdir -p ~/miniconda3
@@ -28,7 +28,7 @@ sudo apt --assume-yes install python3.8-venv
 #echo "## Finished Conda"
 
 #sudo apt install python3-pip
-
+sudo apt --assume-yes install python3.8-venv
 cd FedAdapt
 echo "## Creating python venv"
 python3 -m venv venv
