@@ -8,9 +8,9 @@ K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-HOST2IP = {'VM-Exoscale-Micro':'172.25.246.237' , 'VM-Exoscale-Tiny':'172.25.250.116' , 'VM-Exoscale-Small':'172.25.173.201' , 'gpu1':'143.205.173.64' , 'gpu3':'143.205.173.65'}
-CLIENTS_CONFIG= {'172.25.246.237':0 , '172.25.250.116':1, '172.25.173.201':2, '143.205.173.64':3, '143.205.173.65':4}
-CLIENTS_LIST= ['172.25.246.237' , '172.25.250.116' , '172.25.173.201' , '143.205.173.64' , '143.205.173.65'] 
+HOST2IP = {'VM-Exoscale-Tiny2':'172.25.42.213' , 'VM-Exoscale-Tiny':'172.25.250.116' , 'VM-Exoscale-Small':'172.25.173.201' , 'gpu1':'143.205.173.64' , 'gpu3':'143.205.173.65'}
+CLIENTS_CONFIG= {'172.25.42.213':0 , '172.25.250.116':1, '172.25.173.201':2, '143.205.173.64':3, '143.205.173.65':4}
+CLIENTS_LIST= ['172.25.42.213' , '172.25.250.116' , '172.25.173.201' , '143.205.173.64' , '143.205.173.65'] 
 
 # Dataset configration
 dataset_name = 'CIFAR10'
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {'172.25.246.237': 5 , '172.25.250.116': 5, '172.25.173.201': 5, '143.205.173.64': 5, '143.205.173.65': 5}  # infer times for each device
+iteration = {'172.25.42.213': 5 , '172.25.250.116': 5, '172.25.173.201': 5, '143.205.173.64': 5, '143.205.173.65': 5}  # infer times for each device
 
 random = True
 random_seed = 0

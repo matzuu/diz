@@ -9,7 +9,7 @@ sudo apt --assume-yes install make
 chmod +x Start_FL_training_Client.sh
 export USE_CUDA=0
 export USE_ROCM=0
-#sudo apt --assume-yes install python3.8-venv
+sudo apt --assume-yes install python3.8-venv
 
 #echo "## Installing Conda"
 #mkdir -p ~/miniconda3
@@ -26,6 +26,8 @@ export USE_ROCM=0
 #conda install -y pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cpuonly -c pytorch
 #conda install -y --file FedAdapt/requirements.txt
 #echo "## Finished Conda"
+
+#sudo apt install python3-pip
 
 cd FedAdapt
 echo "## Creating python venv"
