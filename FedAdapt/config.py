@@ -1,16 +1,16 @@
 import sys
 
 # Network configration
-SERVER_ADDR = '143.205.173.100' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' #Server-internal = '172.20.2.75' 
+SERVER_ADDR = '172.25.185.251' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' 
 SERVER_PORT = 51000
 
 K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-HOST2IP = {'edge-device-1':'143.205.173.117' , 'edge-device-2':'143.205.173.105' , 'edge-device-3':'143.205.173.120' , 'edge-device-4':'143.205.173.119' , 'gpu3':'143.205.173.65'}
-CLIENTS_CONFIG= {'143.205.173.117':0 , '143.205.173.105':1, '143.205.173.120':2, '143.205.173.119':3, '143.205.173.65':4}
-CLIENTS_LIST= ['143.205.173.117' , '143.205.173.105' , '143.205.173.120' , '143.205.173.119' , '143.205.173.65'] 
+HOST2IP = {'VM-Exoscale-Micro':'172.25.246.237' , 'VM-Exoscale-Tiny':'172.25.250.116' , 'VM-Exoscale-Small':'172.25.173.201' , 'gpu1':'143.205.173.64' , 'gpu3':'143.205.173.65'}
+CLIENTS_CONFIG= {'172.25.246.237':0 , '172.25.250.116':1, '172.25.173.201':2, '143.205.173.64':3, '143.205.173.65':4}
+CLIENTS_LIST= ['172.25.246.237' , '172.25.250.116' , '172.25.173.201' , '143.205.173.64' , '143.205.173.65'] 
 
 # Dataset configration
 dataset_name = 'CIFAR10'
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {'143.205.173.117': 5 , '143.205.173.105': 5, '143.205.173.120': 5, '143.205.173.119': 5, '143.205.173.65': 5}  # infer times for each device
+iteration = {'172.25.246.237': 5 , '172.25.250.116': 5, '172.25.173.201': 5, '143.205.173.64': 5, '143.205.173.65': 5}  # infer times for each device
 
 random = True
 random_seed = 0
@@ -65,4 +65,4 @@ random_seed = 0
 #Zerotier {'edge-device-1':'172.25.241.195' , 'edge-device-2':'172.25.12.59' , 'edge-device-3':'172.25.133.133' , 'edge-device-4':'172.25.135.52' , 'dellOptiplex43':'172.25.71.194'}
 
 #More than 5 deviced; PAY ATTENTION TO UNUSED
-#Openstack {'edge-device-1':'143.205.173.117' , 'edge-device-2':'143.205.173.105' , 'edge-device-3':'143.205.173.120' , 'edge-device-4':'143.205.173.119' , 'edge-device-5':'143.205.173.103', 'nishant-bogdan':'143.205.173.101'}
+#Openstack {'edge-device-1':'143.205.173.117' , 'edge-device-2':'143.205.173.105' , 'edge-device-3':'172.25.173.201' , 'edge-device-4':'143.205.173.119' , 'edge-device-5':'143.205.173.103', 'nishant-bogdan':'143.205.173.101'}
