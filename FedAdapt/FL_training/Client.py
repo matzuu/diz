@@ -73,11 +73,10 @@ class Client(Communicator):
 				self.optimizer.zero_grad()
 				outputs = self.net(inputs)
 				loss = self.criterion(outputs, targets)
-				logger.info('## DEBUG: Got here1')
 				loss.backward()
-				logger.info('## DEBUG: Got here2')
+				
 				self.optimizer.step()
-				logger.info('## DEBUG: Got here3')
+				
 				
 				
 			

@@ -6,4 +6,4 @@
 #python FedAdapt_clientrun.py
 #NEW NON-VENV START:
 cd FedAdapt/FL_training
-python3 FedAdapt_clientrun.py
+python3 FedAdapt_clientrun.py --offload True
