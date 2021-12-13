@@ -7,7 +7,6 @@ sudo apt --assume-yes install g++
 sudo apt --assume-yes install gcc
 sudo apt --assume-yes install make
 sudo apt --assume-yes install python3-pip
-chmod +x Start_FL_training_Client.sh
 export USE_CUDA=0
 export USE_ROCM=0
 
