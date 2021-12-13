@@ -1,0 +1,33 @@
+echo "## Starting Initialization Script"
+sudo apt-get update
+sudo apt --assume-yes install python3.8-venv
+
+echo "Setting up ssh Keys"
+## Connect to putty
+## Follow the instructions at: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/checking-for-existing-ssh-keys to setup an ssh key-pair for github access
+
+
+#CLONE git repo WITHOUT ssh:
+git clone https://github.com/matzuu/diz.git
+
+
+#CLONE GIT REPO WITH SSH
+
+##Copy the generated keys (id_ed25519 & id_ed25519.pub) in the .ssh folder on the VM
+##Change the permisions of those files from 0644 to 0400 : chmod 400 ~/.ssh/id_ed25519
+## Test ssh conection: ssh -T git@github.com
+## Clone the repo: git clone git@github.com:matzuu/diz.git
+
+echo "## Cloning git repo"
+git clone git@github.com:matzuu/diz
+
+
+
+# JOINING ZEROTIER - Virtual LAN
+## Create ZEROTIER 
+## INSTALL
+curl -s https://install.zerotier.com | sudo bash
+## Connect To network
+sudo zerotier-cli join d3ecf5726deee871
+
+
