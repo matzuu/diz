@@ -47,7 +47,10 @@ class Env(Communicator):
 
 		while len(self.client_socks) < config.K:
 			self.sock.listen(5)
+			logger.info("Waiting Incoming Connections.")
 			(client_sock, (ip, port)) = self.sock.accept()
+			logger.info('Got connection from ' + str(ip))
+			logger.info(client_sock)
 			self.client_socks[str(ip)] = client_sock
 
 		self.uninet = utils.get_model('Unit', self.model_name, 0, self.device, self.model_cfg)
