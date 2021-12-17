@@ -31,6 +31,7 @@ if __name__ == "__main__":
 	client = Client(index, ip_address, config.SERVER_ADDR, config.SERVER_PORT, datalen, 'VGG5', split_layer)
 
 	offload = args.offload
+	logger.info("#### Offload" + str(offload))
 	first = True # First initializaiton control
 	client.initialize(split_layer, offload, first, LR)
 	first = False 
