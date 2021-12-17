@@ -90,5 +90,5 @@ if __name__ == "__main__":
 				break
 
 			# stop when get control update epoch
-			if update_epoch > 50:
+			if update_epoch > 10:
 				break

@@ -69,6 +69,7 @@ if __name__ == "__main__":
 
 		logger.info('==> Reinitialization for Round : {:}'.format(r + 1))
 		if offload:
+			logger.info('Offload Train ')
 			split_layers = sever.adaptive_offload(agent, state)
 		else:
 			split_layers = config.split_layer
