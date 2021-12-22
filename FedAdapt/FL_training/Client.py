@@ -115,3 +115,7 @@ class Client(Communicator):
 	def reinitialize(self, split_layers, offload, first, LR):
 		self.initialize(split_layers, offload, first, LR)
 
+	def send_time_metrics(self, metrics_dict):
+		msg = ['MSG_TIME_METRICS', metrics_dict]
+		self.send_msg(self.sock, msg)
+

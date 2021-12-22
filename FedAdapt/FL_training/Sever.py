@@ -54,10 +54,8 @@ class Sever(Communicator):
 			self.optimizers= {}
 			for i in range(len(split_layers)):
 				####
-				print("TEEEEEEEEEEEEEEEEEEEEEEEEEEST")
-				print(i)
-				print(split_layers)
-				print(config.CLIENTS_LIST)
+				print("## split_layers: " +str(split_layers))
+				print("## clients_list: "  + str(config.CLIENTS_LIST))
 				###
 				client_ip = config.CLIENTS_LIST[i]
 				if split_layers[i] < len(config.model_cfg[self.model_name]) -1: # Only offloading client need initialize optimizer in server
@@ -112,7 +110,7 @@ class Sever(Communicator):
 		self.ttpi = {} # Training time per iteration
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'MSG_TRAINING_TIME_PER_ITERATION')
-			self.ttpi[msg[1]] = msg[2]
+			self.ttpi[msg[1]] = msg[2] #msg
 
 		self.group_labels = self.clustering(self.ttpi, self.bandwidth)
 		self.offloading = self.get_offloading(self.split_layers)
@@ -283,3 +281,12 @@ class Sever(Communicator):
 	def scatter(self, msg):
 		for i in self.client_socks:
 			self.send_msg(self.client_socks[i], msg)
+
+	def receive_time_metrics(self):
+		client_metrics_list = []
+		for s in self.client_socks:
+			msg = self.recv_msg(self.client_socks[s], 'MSG_TIME_METRICS')
+			client_metrics_list.append(msg)
+		return client_metrics_list
+
+
