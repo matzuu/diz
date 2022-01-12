@@ -8,9 +8,9 @@ K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-HOST2IP = {'bogdan4':'143.205.122.102', 'bogdan1':'143.205.122.79' , 'bogdan2':'143.205.122.92' , 'bogdan3':'143.205.122.99', 'bogdan6':'143.205.122.114'}
-CLIENTS_CONFIG= {'143.205.122.102':0 , '143.205.122.79':1 , '143.205.122.92':2, '143.205.122.99':3, '143.205.122.114':4}
-CLIENTS_LIST= ['143.205.122.102' , '143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,  '143.205.122.114'] 
+CLIENTS_LIST= ['143.205.122.114','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102'] 
+HOST2IP = {'bogdan6':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]}
+CLIENTS_CONFIG= {CLIENTS_LIST[0]:0 , CLIENTS_LIST[1]:1 , CLIENTS_LIST[2]:2, CLIENTS_LIST[3]:3, CLIENTS_LIST[4]:4}
 
 # Dataset configration
 dataset_name = 'CIFAR10'
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {'143.205.122.102': 5, '143.205.122.79': 5 , '143.205.122.92': 5, '143.205.122.99': 5, '143.205.122.114': 5}  # infer times for each device
+iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device
 
 random = True
 random_seed = 0

@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "pythonPath": "C:\\Users\\Bogdan\\Documents\\Dizertatie\\diz\\FedAdapt\\venv\\Scripts\\python.exe",
+            "python": "C:\\Users\\Bogdan\\Documents\\Dizertatie\\diz\\FedAdapt\\venv\\Scripts\\python.exe",
             "args": ["--offload","True"]
         }
     ]

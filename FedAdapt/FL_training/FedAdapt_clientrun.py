@@ -138,9 +138,9 @@ if __name__ == "__main__":
 		client.reinitialize(config.split_layer[index], offload, first, LR)
 		time_finish_rebuild = time.perf_counter()
 
-		metrics_dict['client_rounds_time'].append(time_start_round - time_finish_round)
+		metrics_dict['client_rounds_time'].append(time_finish_round - time_start_round)
 		metrics_dict['client_idle_time'].append(time_finish_round - time_start_rebuild) # Wating time between finishing training and starting reinitializing/rebuilding
-		metrics_dict['client_rebuild_time'].append(time_start_rebuild-time_finish_rebuild)
+		metrics_dict['client_rebuild_time'].append(time_finish_rebuild - time_start_rebuild)
 
 		logger.info('Rebuild time: ' + str(time_finish_rebuild - time_start_rebuild))
 		logger.info('==> Reinitialization Finish')

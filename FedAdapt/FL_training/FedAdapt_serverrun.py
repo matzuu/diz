@@ -72,7 +72,7 @@ if __name__ == "__main__":
 		logger.info('==> Reinitialization for Round : {:}'.format(r + 1))
 		logger.info("#### Offload" + str(offload))
 		if offload:
-			logger.info('Offload Train ')
+			logger.info('Offload Train')
 			split_layers = sever.adaptive_offload(agent, state)
 		else:
 			logger.info('NO Offload Train ')
@@ -85,13 +85,13 @@ if __name__ == "__main__":
 		logger.info('==> Reinitialization Finish')
 	##Finished everything
 	client_metrics_list = sever.receive_time_metrics()
-	with open(config.home + '/results/Client_time_metrics.pkl','wb') as f:
+	with open(config.home + '/results/Client_time_metrics6.pkl','wb') as f:
 					pickle.dump(client_metrics_list,f)
 
 	time_server_finish = time.perf_counter()
 	logger.info(f"## Finished FedAdapt in {(time_server_finish - time_server_start)/60:0.4f} minutes, or {time_server_finish - time_server_start:0.4f} seconds")
 	res['server_total__time'] = time_server_finish - time_server_start
 
-	with open(config.home + '/results/FedAdapt_res.pkl','wb') as f:
+	with open(config.home + '/results/FedAdapt_res6.pkl','wb') as f:
 					pickle.dump(res,f)
 

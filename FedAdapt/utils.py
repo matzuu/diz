@@ -42,8 +42,10 @@ def get_local_dataloader(CLIENT_IDEX, cpu_count):
 	transforms.ToTensor(),
 	transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
-	trainset = torchvision.datasets.CIFAR10(
+	trainset = torchvision.datasets.CIFAR10( 
 		root=dataset_path, train=True, download=True, transform=transform_train)
+	# ^^ The WHOLE dataset
+	# vv A subpart of the dataset based on part_tr which is going to be used on the client CLIENT_IDEX
 	subset = Subset(trainset, part_tr)
 	trainloader = DataLoader(
 		subset, batch_size=B, shuffle=True, num_workers=cpu_count)
