@@ -354,12 +354,17 @@ class RL_Client(Communicator):
 		self.net.to(self.device)
 		self.net.train()
 		s_time_infer = time.time()
-		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading
-			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)):
+		#####
+		aux = config.model_cfg[self.model_name]
+		####
+		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading  #model_cfg is a dict with 1 element with the key: "VGG5" and Value: Array of 7 elements; if split_layer is 6 then len(value) - 1 == 6;
+			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
+				##NonOffloading
 				loss = self.criterion(outputs, targets)
 				loss.backward()
+				##NonOffloading
 				self.optimizer.step()
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
@@ -367,16 +372,14 @@ class RL_Client(Communicator):
 			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)):
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
-
+				##Offloading  ##Send some tasks to the server #TODO check serverside
 				msg = ['MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER', outputs.cpu(), targets.cpu()]
 				self.send_msg(self.sock, msg)
-
-				# Wait receiving server gradients
+					# Wait receiving server gradients
 				gradients = self.recv_msg(self.sock)[1].to(self.device)
-
 				outputs.backward(gradients)
+				##Offfloading
 				self.optimizer.step()
-
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
 

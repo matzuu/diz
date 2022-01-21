@@ -37,7 +37,9 @@ def get_local_dataloader(CLIENT_IDEX, cpu_count):
 	part_tr = indices[int((N/K) * CLIENT_IDEX) : int((N/K) * (CLIENT_IDEX+1))]
 
 	transform_train = transforms.Compose([
-	transforms.RandomCrop(32, padding=4),
+	transforms.RandomCrop(32, padding=4), 	#Crop the given image at a random location. 
+											#size – Desired output size of the crop. If size is an int instead of sequence like (h, w), a square crop (size, size) is made.
+											#Optional padding on each border of the image.
 	transforms.RandomHorizontalFlip(),
 	transforms.ToTensor(),
 	transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -50,6 +52,7 @@ def get_local_dataloader(CLIENT_IDEX, cpu_count):
 	trainloader = DataLoader(
 		subset, batch_size=B, shuffle=True, num_workers=cpu_count)
 
+	#https://pytorch.org/docs/stable/data.html#torch.utils.data.BatchSampler for sampler
 	classes = ('plane', 'car', 'bird', 'cat', 'deer',
 		   'dog', 'frog', 'horse', 'ship', 'truck')
 	return trainloader,classes

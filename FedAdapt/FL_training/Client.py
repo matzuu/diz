@@ -75,7 +75,6 @@ class Client(Communicator):
 				outputs = self.net(inputs)
 				loss = self.criterion(outputs, targets)
 				loss.backward()
-				
 				self.optimizer.step()
 				
 				
@@ -83,8 +82,8 @@ class Client(Communicator):
 			
 		else: # Offloading training
 			logger.info('Offloading Training')
-			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)):
-				inputs, targets = inputs.to(self.device), targets.to(self.device)
+			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)): ###WHAT ARE TARGET?? TODO STUDY WHAT VARIABLES MEAN
+				inputs, targets = inputs.to(self.device), targets.to(self.device) ###Targets shape = [100], input shape = [100,3,32,32]
 				self.optimizer.zero_grad()
 				outputs = self.net(inputs)
 

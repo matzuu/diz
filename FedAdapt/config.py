@@ -1,15 +1,15 @@
 import sys
 
 # Network configration
-SERVER_ADDR = '143.205.122.114' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' 
+SERVER_ADDR = '143.205.122.203' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' #'dellOptiplex43' : '143.205.122.203'
 SERVER_PORT = 51000
 
 K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-CLIENTS_LIST= ['143.205.122.203','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102'] 
-HOST2IP = {'dellOptiplex43':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]}
+CLIENTS_LIST= ['143.205.122.114','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102'] 
+HOST2IP = {'bogdan6':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]}
 CLIENTS_CONFIG= {CLIENTS_LIST[0]:0 , CLIENTS_LIST[1]:1 , CLIENTS_LIST[2]:2, CLIENTS_LIST[3]:3, CLIENTS_LIST[4]:4}
 
 # Dataset configration
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device
+iteration = {CLIENTS_LIST[0]: 50, CLIENTS_LIST[1]: 50 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device
 
 random = True
 random_seed = 0
