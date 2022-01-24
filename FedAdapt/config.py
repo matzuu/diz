@@ -22,8 +22,8 @@ N = 50000 # data length
 
 
 # Model configration
-model_cfg = {
-	# (Type, in_channels, out_channels, kernel_size, out_size(c_out*h*w), flops(c_out*h*w*k*k*c_in))
+model_cfg = { #c_out == channel_out
+	# (Type, in_channels, out_channels, kernel_size, out_size(c_out*h*w), flops(c_out*h*w*k*k*c_in)) #De ce 2x Kernel ptr flops?
 	'VGG5' : [('C', 3, 32, 3, 32*32*32, 32*32*32*3*3*3), ('M', 32, 32, 2, 32*16*16, 0), 
 	('C', 32, 64, 3, 64*16*16, 64*16*16*3*3*32), ('M', 64, 64, 2, 64*8*8, 0), 
 	('C', 64, 64, 3, 64*8*8, 64*8*8*3*3*64), 
@@ -45,8 +45,8 @@ B = 100 # Batch size
 
 
 # RL training configration
-max_episodes = 100         # max training episodes
-max_timesteps = 100        # max timesteps in one episode
+max_episodes = 5         # max training episodes
+max_timesteps = 10        # max timesteps in one episode
 exploration_times = 20	   # exploration times without std decay
 n_latent_var = 64          # number of variables in hidden layer
 action_std = 0.5           # constant std for action distribution (Multivariate Normal)
@@ -57,7 +57,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {CLIENTS_LIST[0]: 50, CLIENTS_LIST[1]: 50 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device
+iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 10,CLIENTS_LIST[4] : 5}  # infer times for each device
 
 random = True
 random_seed = 0

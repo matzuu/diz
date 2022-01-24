@@ -140,6 +140,10 @@ class Env(Communicator):
 			self.network_state[msg[1]] = msg[2]
 
 		# Offloading training and return env state
+		##
+		logger.info('## Infering on the server inside the step function')
+		##
+		
 		self.infer(thread_number, client_ips)
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)
 		reward, maxtime, done = self.calculate_reward(self.infer_state)
@@ -147,7 +151,7 @@ class Env(Communicator):
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
 		
-		return np.array(state), reward, maxtime, done
+		return np.array(state), reward, maxtime, done, self.total_iterations_time, self.infer_state
 
 	def initialize(self, split_layers):
 		self.split_layers = split_layers
@@ -193,9 +197,11 @@ class Env(Communicator):
 			self.threads[client_ips[i]].join()
 
 		self.infer_state = {}
+		self.total_iterations_time = {}
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'MSG_INFER_SPEED')
 			self.infer_state[msg[1]] = msg[2]
+			self.total_iterations_time[msg[1]] = msg[3]
 
 	def _thread_infer_no_offloading(self, client_ip):
 		pass
@@ -241,8 +247,8 @@ class Env(Communicator):
 		model_state_flops = []
 		cumulated_flops = 0
 
-		for l in model_cfg[model_name]:
-			cumulated_flops += l[5]
+		for layer in model_cfg[model_name]:
+			cumulated_flops += layer[5]
 			model_state_flops.append(cumulated_flops)
 
 		model_flops_list = np.array(model_state_flops)
@@ -375,7 +381,7 @@ class RL_Client(Communicator):
 				##Offloading  ##Send some tasks to the server #TODO check serverside
 				msg = ['MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER', outputs.cpu(), targets.cpu()]
 				self.send_msg(self.sock, msg)
-					# Wait receiving server gradients
+					# Wait receiving server gradients 'MSG_SERVER_GRADIENTS_SERVER_TO_CLIENT_'
 				gradients = self.recv_msg(self.sock)[1].to(self.device)
 				outputs.backward(gradients)
 				##Offfloading
@@ -387,7 +393,8 @@ class RL_Client(Communicator):
 		logger.info('Training time: ' + str(e_time_infer - s_time_infer))
 
 		infer_speed = (e_time_infer - s_time_infer) / config.iteration[self.ip_address]
-		msg = ['MSG_INFER_SPEED', self.ip, infer_speed]
+		infer_total_time = e_time_infer - s_time_infer
+		msg = ['MSG_INFER_SPEED', self.ip, infer_speed, infer_total_time]
 		self.send_msg(self.sock, msg)
 
 	def reinitialize(self, split_layers):
