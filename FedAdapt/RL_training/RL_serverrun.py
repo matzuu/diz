@@ -17,6 +17,8 @@ if __name__ == "__main__":
 	import PPO
 	import time
 
+	time_server_start = time.perf_counter()
+
 	if config.random:
 		torch.manual_seed(config.random_seed)
 		np.random.seed(config.random_seed)
@@ -40,11 +42,14 @@ if __name__ == "__main__":
 	res = {}
 	res['rewards'], res['maxtime'], res['actions'], res['std'] = [], [], [], []
 	metrics_dict = dict()
-	episode_dict = dict()
+	
 
 	for i_episode in tqdm.tqdm(range(1, config.max_episodes+1)):
 
+		
 		time_start_episode = time.perf_counter()
+		episode_dict = dict()
+		
 		done = False # Flag controling finish of one episode
 		if i_episode == 1: # We run two times of initial state to get stable training time
 			first = True
@@ -119,9 +124,15 @@ if __name__ == "__main__":
 		time_finish_episode = time.perf_counter()
 		episode_dict["episode_time_total"] = time_finish_episode - time_start_episode
 		metrics_dict[i_episode] = episode_dict
+		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		with open(config.home + '/results/RL_Metrics1','wb') as f:
+		with open(config.home + '/results/RL_Metrics1.pkl','wb') as f:
 					pickle.dump(metrics_dict,f)
+
+	##Out of Episode loop
+	time_server_finish= time.perf_counter()
+	metrics_dict["RL_time_total"] = time_server_finish - time_server_start
+	print("Finished RL_serverrun")
 		
 
