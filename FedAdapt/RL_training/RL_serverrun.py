@@ -49,7 +49,7 @@ if __name__ == "__main__":
 		
 		time_start_episode = time.perf_counter()
 		episode_dict = dict()
-		
+
 		done = False # Flag controling finish of one episode
 		if i_episode == 1: # We run two times of initial state to get stable training time
 			first = True
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 			logger.info('====================================>')
 			time_step +=1
 			action, action_mean, std = ppo.select_action(state, memory)
-			state, reward, maxtime, done, total_iteration_time, infer_state = env.step(action, done)
+			state, reward, maxtime, done, total_iteration_time, infer_state, baseline = env.step(action, done)
 			logger.info('Current reward: ' + str(reward))
 			logger.info('Current maxtime: ' + str(maxtime))
 
@@ -103,15 +103,16 @@ if __name__ == "__main__":
 			step_dict['split_layer'] = config.split_layer
 			step_dict['server_step_time_total'] = time_finish_step_server - time_start_step_server
 			step_dict['client_step_time_total'] = total_iteration_time
-			step_dict['client_iteration_time'] = infer_state
+			step_dict['client_last_iteration_time'] = infer_state
 			step_dict['maxtime_iteration'] = maxtime
+			step_dict['client_baseline'] = baseline
 			step_dict['rewards'] = reward
 			step_dict['actions'] = action
 			step_dict['action_mean'] = action_mean
 			step_dict['std'] = std
 			step_dict['state'] = state
 			# Capture all of the metrics of step T into episodes dict
-			episode_dict[t] = step_dict
+			episode_dict["step_"+str(t)] = step_dict
 			##
 			
 			if done:
@@ -123,11 +124,11 @@ if __name__ == "__main__":
 
 		time_finish_episode = time.perf_counter()
 		episode_dict["episode_time_total"] = time_finish_episode - time_start_episode
-		metrics_dict[i_episode] = episode_dict
+		metrics_dict["episode_" + str(i_episode)] = episode_dict
 		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		with open(config.home + '/results/RL_Metrics1.pkl','wb') as f:
+		with open(config.home + '/results/RL_Metrics2.pkl','wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	##Out of Episode loop

@@ -150,8 +150,8 @@ class Env(Communicator):
 		logger.info('Training time per iteration: '+ json.dumps(self.infer_state))
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
-		
-		return np.array(state), reward, maxtime, done, self.total_iterations_time, self.infer_state
+
+		return np.array(state), reward, maxtime, done, self.total_iterations_time, self.infer_state, self.baseline
 
 	def initialize(self, split_layers):
 		self.split_layers = split_layers

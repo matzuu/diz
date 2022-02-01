@@ -1,2 +1,5 @@
-tqdm==4.62.3
-sklearn==0.0
+tqdm==4.62.3 #Req by client
+sklearn==0.0 #Req by client
+#libs below not required by clients/edge devices; used only for other data processing i.e: entropy, results display, etc #
+matplotlib==3.5.1 
+scikit-image==0.19.1  

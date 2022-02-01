@@ -1,16 +1,17 @@
 import sys
 
 # Network configration
-SERVER_ADDR = '143.205.122.203' #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' #'dellOptiplex43' : '143.205.122.203'
-SERVER_PORT = 51000
+#Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' #'dellOptiplex43' : '143.205.122.203'
+SERVER_ADDR = '143.205.122.203' #server&client-side
+SERVER_PORT = 51000 #server&client-side
 
 K = 5 # Number of devices
 G = 3 # Number of groups
 
 # Unique clients order
-CLIENTS_LIST= ['143.205.122.114','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102'] 
-HOST2IP = {'bogdan6':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]}
-CLIENTS_CONFIG= {CLIENTS_LIST[0]:0 , CLIENTS_LIST[1]:1 , CLIENTS_LIST[2]:2, CLIENTS_LIST[3]:3, CLIENTS_LIST[4]:4}
+CLIENTS_LIST= ['143.205.122.114','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102']  #server&client-side
+HOST2IP = {'bogdan6':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]} #server&client-side
+CLIENTS_CONFIG= {CLIENTS_LIST[0]:0 , CLIENTS_LIST[1]:1 , CLIENTS_LIST[2]:2, CLIENTS_LIST[3]:3, CLIENTS_LIST[4]:4} #server&client-side
 
 # Dataset configration
 dataset_name = 'CIFAR10'
@@ -45,8 +46,8 @@ B = 100 # Batch size
 
 
 # RL training configration
-max_episodes = 100         # max training episodes
-max_timesteps = 100       # max timesteps in one episode
+max_episodes = 100         # max training episodes  #server-side-only
+max_timesteps = 100       # max timesteps in one episode #server-side-only
 exploration_times = 20	   # exploration times without std decay
 n_latent_var = 64          # number of variables in hidden layer
 action_std = 0.5           # constant std for action distribution (Multivariate Normal)
@@ -57,7 +58,7 @@ rl_gamma = 0.9             # discount factor
 rl_b = 100				   # Batchsize
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
-iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 10,CLIENTS_LIST[4] : 5}  # infer times for each device
+iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device #server&client-side
 
 random = True
 random_seed = 0
