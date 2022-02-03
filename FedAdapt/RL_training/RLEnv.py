@@ -1,3 +1,4 @@
+from http import client
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -126,6 +127,15 @@ class Env(Communicator):
 		client_ips = config.CLIENTS_LIST
 		self.initialize(split_layers)
 
+
+		self.time_start_client_processing = time.perf_counter()
+		try:
+			self.step_client_interstep_idle_time = self.time_start_client_processing - self.time_finish_client_processing															# 1e-5 is the tolerance for float rounding error; the substraction is small => it is 0
+			# ^ Client Time idle between end of previous step and beginning of this step;
+		except AttributeError: #first round; time_finish_client_processing is not initialized so it results in AttributeError; 
+			self.step_client_interstep_idle_time = 0.0 #cannot exist idle time before first round;
+
+
 		msg = ['RESET_FLAG', False]
 		self.scatter(msg)
 
@@ -145,20 +155,25 @@ class Env(Communicator):
 		##
 		
 		self.infer(thread_number, client_ips)
+		self.time_finish_client_processing = time.perf_counter()
+
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)
 		reward, maxtime, done = self.calculate_reward(self.infer_state)
 		logger.info('Training time per iteration: '+ json.dumps(self.infer_state))
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
 
-		return np.array(state), reward, maxtime, done, self.total_iterations_time, self.infer_state, self.baseline
+		return np.array(state), reward, maxtime, done
 
 	def initialize(self, split_layers):
 		self.split_layers = split_layers
 		self.nets = {}
-		self.optimizers= {}
+		self.optimizers = {}
+		self.step_client_offloading_idle_time = {}
+		self.step_client_interstep_idle_time = 0.0 #Will be modified if it's not the first step and Val will be modified;
 		for i in range(len(split_layers)):
 			client_ip = config.CLIENTS_LIST[i]
+			self.step_client_offloading_idle_time[client_ip] = [] #Iteration Idle time
 			if split_layers[i] < config.model_len -1: # Only offloading client need initialized in server
 				self.nets[client_ip] = utils.get_model('Server', self.model_name, split_layers[i], self.device, self.model_cfg)
 				self.optimizers[client_ip] = optim.SGD(self.nets[client_ip].parameters(), lr=config.LR,
@@ -198,10 +213,15 @@ class Env(Communicator):
 
 		self.infer_state = {}
 		self.total_iterations_time = {}
+		time_start_idle_server = time.perf_counter()
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'MSG_INFER_SPEED')
 			self.infer_state[msg[1]] = msg[2]
 			self.total_iterations_time[msg[1]] = msg[3]
+		time_finish_idle_server = time.perf_counter()
+		#Time it takes to wait for the clients to send their finish tasks msg. (MSG_INFER_SPEED)
+		self.server_idle_time = time_finish_idle_server - time_start_idle_server 
+		
 
 	def _thread_infer_no_offloading(self, client_ip):
 		pass
@@ -209,6 +229,9 @@ class Env(Communicator):
 	def _thread_infer_offloading(self, client_ip):
 		for i in range(config.iteration[client_ip]):
 			msg = self.recv_msg(self.client_socks[client_ip], 'MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER')
+			#After the clients sends this message, he stays idle:
+			time_start_iteration_idleTime_client = time.perf_counter()
+
 			smashed_layers = msg[1]
 			labels = msg[2]
 
@@ -223,6 +246,10 @@ class Env(Communicator):
 			# Send gradients to client
 			msg = ['MSG_SERVER_GRADIENTS_SERVER_TO_CLIENT_'+str(client_ip), inputs.grad]
 			self.send_msg(self.client_socks[client_ip], msg)
+			# After the client receives this message, he no longer stays idle:
+			time_finish_iteration_idleTime_client = time.perf_counter()
+			self.step_client_offloading_idle_time[client_ip].append(time_finish_iteration_idleTime_client - time_start_iteration_idleTime_client)
+
 
 	def scatter(self, msg):
 		for i in self.client_socks:

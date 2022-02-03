@@ -64,7 +64,7 @@ if __name__ == "__main__":
 			logger.info('====================================>')
 			time_step +=1
 			action, action_mean, std = ppo.select_action(state, memory)
-			state, reward, maxtime, done, total_iteration_time, infer_state, baseline = env.step(action, done)
+			state, reward, maxtime, done = env.step(action, done)
 			logger.info('Current reward: ' + str(reward))
 			logger.info('Current maxtime: ' + str(maxtime))
 
@@ -102,11 +102,14 @@ if __name__ == "__main__":
 			step_dict = dict()
 			step_dict['split_layer'] = config.split_layer
 			step_dict['server_step_time_total'] = time_finish_step_server - time_start_step_server
-			step_dict['client_step_time_total'] = total_iteration_time
-			step_dict['client_last_iteration_time'] = infer_state
+			step_dict['client_step_time_total'] = env.total_iterations_time
+			step_dict['client_last_iteration_time'] = env.infer_state
 			step_dict['maxtime_iteration'] = maxtime
-			step_dict['client_baseline'] = baseline
+			step_dict['client_baseline'] = env.baseline
 			step_dict['rewards'] = reward
+			step_dict['server_idle_time'] = env.server_idle_time
+			step_dict['client_interstep_idle_time'] = env.step_client_interstep_idle_time
+			step_dict['client_offloading_idle_time'] = env.step_client_offloading_idle_time
 			step_dict['actions'] = action
 			step_dict['action_mean'] = action_mean
 			step_dict['std'] = std
@@ -128,7 +131,7 @@ if __name__ == "__main__":
 		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		with open(config.home + '/results/RL_Metrics2.pkl','wb') as f:
+		with open(config.home + '/results/RL_Metrics3.pkl','wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	##Out of Episode loop
