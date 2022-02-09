@@ -213,11 +213,15 @@ class Env(Communicator):
 
 		self.infer_state = {}
 		self.total_iterations_time = {}
+		self.iteration_metrics = {}
 		time_start_idle_server = time.perf_counter()
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'MSG_INFER_SPEED')
 			self.infer_state[msg[1]] = msg[2]
-			self.total_iterations_time[msg[1]] = msg[3]
+			
+
+			self.total_iterations_time[msg[1]] = msg[3]  #msg[1] = 'ip.addres'
+			self.iteration_metrics[msg[1]] = msg[4]
 		time_finish_idle_server = time.perf_counter()
 		#Time it takes to wait for the clients to send their finish tasks msg. (MSG_INFER_SPEED)
 		self.server_idle_time = time_finish_idle_server - time_start_idle_server 
@@ -386,12 +390,13 @@ class RL_Client(Communicator):
 	def infer(self, trainloader):
 		self.net.to(self.device)
 		self.net.train()
-		s_time_infer = time.time()
-		#####
-		aux = config.model_cfg[self.model_name]
-		####
+		metrics_current_infer = {}
+		s_time_infer = time.perf_counter()
+		
 		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading  #model_cfg is a dict with 1 element with the key: "VGG5" and Value: Array of 7 elements; if split_layer is 6 then len(value) - 1 == 6;
-			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
+			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
+				s_time_batch_infer = time.perf_counter()	
+
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
 				##NonOffloading
@@ -399,10 +404,18 @@ class RL_Client(Communicator):
 				loss.backward()
 				##NonOffloading
 				self.optimizer.step()
+
+				######Metrics Gathering
+				f_time_batch_infer = time.perf_counter()
+				iteration_time = f_time_batch_infer - s_time_batch_infer
+				metrics_current_infer['Batch_'+str(batch_idx)] = (iteration_time,indexes)
+				######Done Metrics Gathering
+
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
 		else: # Offloading training
-			for batch_idx, (inputs, targets) in enumerate(tqdm.tqdm(trainloader)):
+			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)):
+				s_time_batch_infer = time.perf_counter()
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
 				##Offloading  ##Send some tasks to the server #TODO check serverside
@@ -413,15 +426,22 @@ class RL_Client(Communicator):
 				outputs.backward(gradients)
 				##Offfloading
 				self.optimizer.step()
+
+				######Metrics Gathering
+				f_time_batch_infer = time.perf_counter()
+				iteration_time = f_time_batch_infer - s_time_batch_infer
+				metrics_current_infer['Batch_'+str(batch_idx)] = (iteration_time,indexes)
+				######Done Metrics Gathering
+
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
 
-		e_time_infer = time.time()
+		e_time_infer = time.perf_counter()
 		logger.info('Training time: ' + str(e_time_infer - s_time_infer))
 
 		infer_speed = (e_time_infer - s_time_infer) / config.iteration[self.ip_address]
 		infer_total_time = e_time_infer - s_time_infer
-		msg = ['MSG_INFER_SPEED', self.ip, infer_speed, infer_total_time]
+		msg = ['MSG_INFER_SPEED', self.ip, infer_speed,infer_total_time, metrics_current_infer]
 		self.send_msg(self.sock, msg)
 
 	def reinitialize(self, split_layers):

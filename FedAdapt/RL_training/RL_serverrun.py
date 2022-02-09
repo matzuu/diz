@@ -107,6 +107,7 @@ if __name__ == "__main__":
 			step_dict['server_step_time_total'] = time_finish_step_server - time_start_step_server
 			step_dict['client_step_time_total'] = env.total_iterations_time
 			step_dict['client_last_iteration_time'] = env.infer_state
+			step_dict['client_iteration_metrics'] = env.iteration_metrics
 			step_dict['maxtime_iteration'] = maxtime
 			step_dict['client_baseline'] = env.baseline
 			step_dict['rewards'] = reward

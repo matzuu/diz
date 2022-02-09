@@ -16,7 +16,7 @@ import torch.nn as nn
 import torch.nn.init as init
 import torchvision
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import Dataset,DataLoader, Subset
 
 
 import pickle, struct, socket
@@ -32,11 +32,22 @@ logger = logging.getLogger(__name__)
 np.random.seed(0)
 torch.manual_seed(0)
 
-def get_local_dataloader(CLIENT_IDEX, cpu_count):
-	indices = list(range(N))
-	part_tr = indices[int((N/K) * CLIENT_IDEX) : int((N/K) * (CLIENT_IDEX+1))]
+class MyDataset(Dataset):
+    def __init__(self):
+        self.trainset = torchvision.datasets.CIFAR10(root=dataset_path, train=True, download=True, transform=get_transform_train())
+        
+    def __getitem__(self, index):
+        data, target = self.trainset[index]
+        
+        # Your transformations here (or set it in CIFAR10)
+        
+        return data, target, index
 
-	transform_train = transforms.Compose([
+    def __len__(self):
+        return len(self.trainset)
+		
+def get_transform_train():
+	return transforms.Compose([
 	transforms.RandomCrop(32, padding=4), 	#Crop the given image at a random location. 
 											#size – Desired output size of the crop. If size is an int instead of sequence like (h, w), a square crop (size, size) is made.
 											#Optional padding on each border of the image.
@@ -44,8 +55,15 @@ def get_local_dataloader(CLIENT_IDEX, cpu_count):
 	transforms.ToTensor(),
 	transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
-	trainset = torchvision.datasets.CIFAR10( 
+
+def get_local_dataloader(CLIENT_IDEX, cpu_count):
+	indices = list(range(N))
+	part_tr = indices[int((N/K) * CLIENT_IDEX) : int((N/K) * (CLIENT_IDEX+1))]
+
+	transform_train = get_transform_train()
+	trainsetOld = torchvision.datasets.CIFAR10( 
 		root=dataset_path, train=True, download=True, transform=transform_train)
+	trainset = MyDataset()
 	# ^^ The WHOLE dataset
 	# vv A subpart of the dataset based on part_tr which is going to be used on the client CLIENT_IDEX
 	subset = Subset(trainset, part_tr)
