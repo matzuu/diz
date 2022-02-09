@@ -2,6 +2,10 @@ import pickle #
 import matplotlib.pyplot as plt
 import numpy as np
 import operator
+import inspect
+import sys
+sys.path.append('../FedAdapt')
+import config
 ##IMPORTS##
 #########################################
 
@@ -10,12 +14,18 @@ import operator
 
 def display_split_layer_by_episode(RL_res1):
     split_layer_matrix = []
+
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
     for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
 
         episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        episode_stepsNr_indexes.append(nrSteps) #used for displaying when an episode ends on the plot
         for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
             step = episode["step_"+str(step_index)]
             split_layer_matrix.append(step['split_layer'])
+
+            
 
     x = range(1,len(split_layer_matrix)+1)
     y1 = np.array(split_layer_matrix)[:,0] #Values of 1st client
@@ -34,9 +44,34 @@ def display_split_layer_by_episode(RL_res1):
 
     ax.set(xlabel='step nr', ylabel=' split_layer ',
         title='split_layer progress over time')
-    ax.grid()
 
-    fig.savefig("test.png")
+    # Major ticks every 20, minor ticks every 5
+    major_x_ticks = np.arange(0, 101, 5)
+    minor_x_ticks = np.arange(1, 101, 1)
+    major_y_ticks = np.arange(0, 10, 1)
+    minor_y_ticks = np.arange(0, 10, 0.5)
+    episode_stepsNr_indexes.append(nrSteps)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.3)
+    ax.grid(which='major', alpha=0.8)
+    
+    ax.legend(loc="upper right")
+
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
 
     print("Average of 1st device split_layer = " + str(np.average(y1)) )
@@ -56,12 +91,15 @@ def display_split_layer_by_episode(RL_res1):
 def display_steps_and_relativeTime_per_episode(RL_res1):
     episode_nrSteps_list = []
     episode_avg_step_time = []
-
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
 
     for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
         episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
         episode_nrSteps_list.append(len(episode)-1)
         episode_avg_step_time.append(episode["episode_time_total"]/len(episode)-1)
+
+        episode_stepsNr_indexes.append(nrSteps) #used for displaying when an episode ends on the plot
 
     ##########################################################
     x = range(1,len(episode_nrSteps_list)+1)
@@ -78,17 +116,19 @@ def display_steps_and_relativeTime_per_episode(RL_res1):
 
     # Major ticks every 20, minor ticks every 5
     major_x_ticks = np.arange(0, 101, 5)
-    minor_x_ticks = np.arange(0, 101, 1)
-    major_y_ticks = np.arange(0, 17, 2)
-    minor_y_ticks = np.arange(0, 17, 1)
+    minor_x_ticks = np.arange(1, 101, 1)
+    major_y_ticks = np.arange(0, 10, 1)
+    minor_y_ticks = np.arange(0, 10, 0.5)
+    episode_stepsNr_indexes.append(nrSteps)
+    episode_x_ticks = episode_stepsNr_indexes
     
     ###########################################################
     ##No need to change bellow   
     
-    ax.set_xticks(major_x_ticks)
+    ax.set_xticks(episode_x_ticks)
     ax.set_xticks(minor_x_ticks, minor=True)
-    ax.set_yticks(major_y_ticks)
-    ax.set_yticks(minor_y_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
 
     # And a corresponding grid
     ax.grid(which='both')
@@ -98,7 +138,9 @@ def display_steps_and_relativeTime_per_episode(RL_res1):
     ax.grid(which='major', alpha=0.8)
     
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
 
 
@@ -158,9 +200,9 @@ def display_eachStep_rew_maxIterTime_stepTime(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
 
 
@@ -217,11 +259,10 @@ def display_maxIterTime(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -287,11 +328,10 @@ def display_server_and_client_steptime(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -355,11 +395,11 @@ def display_server_and_client_maxSteptime(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
+    
 
     print("DONE_DISPLAY")
 
@@ -431,11 +471,10 @@ def display_server_and_client_idle_time(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -499,11 +538,10 @@ def display_server_and_client_maxNmin_idle_time(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -571,11 +609,10 @@ def display_server_client_stepNidle_time(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -597,8 +634,8 @@ def display_1st_client_splitLayers_and_idle_time(RL_res1):
             step = episode["step_"+str(step_index)]
             step_serverStepTime_list.append(step['server_step_time_total'])
             step_client_layer_list.append(step['split_layer'][0])
-            step_client_stepTime_list.append(step['client_step_time_total']['143.205.122.114'])
-            step_client_idleTime_list.append(sum(step['client_offloading_idle_time']['143.205.122.114'])) #sum of all iterations idle time for 1st client
+            step_client_stepTime_list.append(step['client_step_time_total'][config.CLIENTS_LIST[0]])
+            step_client_idleTime_list.append(sum(step['client_offloading_idle_time'][config.CLIENTS_LIST[0]])) #sum of all iterations idle time for 1st client
                 
            
     ##########################################################
@@ -616,7 +653,7 @@ def display_1st_client_splitLayers_and_idle_time(RL_res1):
     ax.plot(x, y4, color='tab:green',label="Client Idle Time")
     
     ax.set(xlabel='Step Nr ', ylabel=' time(seconds) ',
-        title='Server and clients idle times')
+        title='Server and 1st client idle times')
 
     # Major ticks every 20, minor ticks every 5
     major_x_ticks = np.arange(0, 101, 5)
@@ -640,11 +677,10 @@ def display_1st_client_splitLayers_and_idle_time(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()
-
 
     print("DONE_DISPLAY")
 
@@ -702,28 +738,28 @@ def  display_add_client_interstep_time(RL_res1):
     # Or if you want different settings for the grids:
     ax.grid(which='minor', alpha=0.2)
     ax.grid(which='major', alpha=0.8)
-    
     ax.legend(loc="upper right")
-    fig.savefig("test.png")
-    plt.show()         
-            
+    current_function_name = inspect.stack()[0][3]
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
 
 
     print("DONE_DISPLAY")
 if __name__ == "__main__":
-    with open('./results/RL_Metrics3.pkl', 'rb') as f:
+    metrics_file = "RL_Metrics3"
+    with open("./results/"+metrics_file+ ".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    #display_split_layer_by_episode(RL_res1)
-    #display_steps_and_relativeTime_per_episode(RL_res1)
-    #display_eachStep_rew_maxIterTime_stepTime(RL_res1)
-    #display_maxIterTime(RL_res1)
-    #display_server_and_client_steptime(RL_res1)
-    #display_server_and_client_maxSteptime(RL_res1)
-    #Show Nishant
-    #display_server_and_client_idle_time(RL_res1)
-    #display_server_and_client_maxNmin_idle_time(RL_res1)
-    #display_server_client_stepNidle_time(RL_res1)
-    #display_1st_client_splitLayers_and_idle_time(RL_res1)
+    # display_split_layer_by_episode(RL_res1)
+    # display_steps_and_relativeTime_per_episode(RL_res1)
+    # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
+    # display_maxIterTime(RL_res1)
+    # display_server_and_client_steptime(RL_res1)
+    # display_server_and_client_maxSteptime(RL_res1)
+    ##Show Nishant
+    display_server_and_client_idle_time(RL_res1)
+    display_server_and_client_maxNmin_idle_time(RL_res1)
+    display_server_client_stepNidle_time(RL_res1)
+    display_1st_client_splitLayers_and_idle_time(RL_res1)
     display_add_client_interstep_time(RL_res1)
     
     print("Loaded Metrics dataset")

@@ -2,15 +2,17 @@ import sys
 
 # Network configration
 #Server-internal = '172.20.2.75' # zerotier '172.25.185.251' # Openstack = '143.205.173.100' #'dellOptiplex43' : '143.205.122.203'
-SERVER_ADDR = '143.205.122.203' #server&client-side
+SERVER_ADDR = '143.205.122.114' #server&client-side
 SERVER_PORT = 51000 #server&client-side
 
 K = 5 # Number of devices
 G = 3 # Number of groups
 
+#'143.205.122.114' bogdan6
+
 # Unique clients order
-CLIENTS_LIST= ['143.205.122.114','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102']  #server&client-side
-HOST2IP = {'bogdan6':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]} #server&client-side
+CLIENTS_LIST= ['143.205.122.203','143.205.122.79' , '143.205.122.92' , '143.205.122.99' ,   '143.205.122.102']  #server&client-side
+HOST2IP = {'dellOptiplex43':CLIENTS_LIST[0], 'bogdan1':CLIENTS_LIST[1] , 'bogdan2':CLIENTS_LIST[2] , 'bogdan3':CLIENTS_LIST[3], 'bogdan4':CLIENTS_LIST[4]} #server&client-side
 CLIENTS_CONFIG= {CLIENTS_LIST[0]:0 , CLIENTS_LIST[1]:1 , CLIENTS_LIST[2]:2, CLIENTS_LIST[3]:3, CLIENTS_LIST[4]:4} #server&client-side
 
 # Dataset configration

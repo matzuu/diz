@@ -45,8 +45,9 @@ if __name__ == "__main__":
 	
 
 	for i_episode in tqdm.tqdm(range(1, config.max_episodes+1)):
-
-		
+		###############
+		####EPISODE####
+		###############	
 		time_start_episode = time.perf_counter()
 		episode_dict = dict()
 
@@ -59,7 +60,9 @@ if __name__ == "__main__":
 			state = env.reset(done, first)
 
 		for t in range(config.max_timesteps):
-
+			############
+			####STEP####
+			############
 			time_start_step_server = time.perf_counter()
 			logger.info('====================================>')
 			time_step +=1
