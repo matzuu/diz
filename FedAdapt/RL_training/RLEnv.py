@@ -135,7 +135,13 @@ class Env(Communicator):
 		except AttributeError: #first round; time_finish_client_processing is not initialized so it results in AttributeError; 
 			self.step_client_interstep_idle_time = 0.0 #cannot exist idle time before first round;
 
-
+		######################
+		##Forcing No Offload##
+		######################
+		config.split_layer = [6,6,6,6,6]
+		split_layers = [6,6,6,6,6]
+		self.split_layers = [6,6,6,6,6]
+		#################
 		msg = ['RESET_FLAG', False]
 		self.scatter(msg)
 

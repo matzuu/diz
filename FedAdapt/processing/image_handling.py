@@ -56,12 +56,15 @@ def first_get_entropy_attempt():
     fig.show()
 
 
+
+
+
 if __name__ == "__main__":
     dict1 = unpickle(config.dataset_path + "cifar-10-batches-py/data_batch_1")
     
     images1 = np.reshape(dict1[b'data'],(10000,3,32,32)) #array is 10000,3,32,32, need it as 10000,32,32,3
     images1 = images1.transpose(0,2,3,1) # change to 10000,32,32,3   i.e move index 1(3) to 3rd intex, and move the 2nd & 3rd into 1&2; index 0 (10000) should stay the same
-
+    indexes = range(10000)
     labels1 = dict1[b'labels']
     #####################
     ### Calc Entropy
@@ -77,6 +80,7 @@ if __name__ == "__main__":
     ### PANDAS DF
 
     data = {
+        "Index": indexes,
         "Labels": labels1,
         "Entropy": entropy_of_img_list
     }
@@ -88,6 +92,8 @@ if __name__ == "__main__":
 
     aux = df.groupby('Labels')['Entropy'].mean()
     print(aux)
+
+    df.to_pickle('./results/entropy_cifar10_df.pkl')
     ###
     
     # img = images1[457]

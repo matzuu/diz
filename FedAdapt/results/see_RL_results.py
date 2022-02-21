@@ -6,6 +6,7 @@ import inspect
 import sys
 sys.path.append('../FedAdapt')
 import config
+import processing.entropy as entro
 ##IMPORTS##
 #########################################
 
@@ -684,7 +685,7 @@ def display_1st_client_splitLayers_and_idle_time(RL_res1):
 
     print("DONE_DISPLAY")
 
-def  display_add_client_interstep_time(RL_res1):
+def display_add_client_interstep_time(RL_res1):
     step_serverStepTime_list = []
     step_clientStepMinSumTime_list = []
     step_clientStepMaxSumTime_list = []
@@ -745,21 +746,429 @@ def  display_add_client_interstep_time(RL_res1):
 
 
     print("DONE_DISPLAY")
+
+def display_entropyOnAvg_batches(RL_res1):
+    current_function_name = inspect.stack()[0][3]
+
+    batch_time_list = []
+    batch_imgs_list = []
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
+    count = 1
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        nrSteps += len(episode)-1
+        episode_stepsNr_indexes.append(count) #used for displaying when an episode ends on the plot
+
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            first_client_iteration = step['client_iteration_metrics'][config.CLIENTS_LIST[0]]
+            for batch in first_client_iteration.values():
+                
+                batch_time_list.append(batch[0])
+                batch_imgs_list.append(batch[1])
+                count+=1
+    
+    entro_of_batches = entro.get_avg_entropy_of_img_batches(batch_imgs_list)
+                    
+
+    covariance = np.cov(batch_time_list,entro_of_batches)
+    print("COVARIANCE "+current_function_name+":")
+    print(covariance)
+    ###########################################################
+    x = range(1,len(batch_time_list)+1)
+    y1 = np.array(batch_time_list) 
+    y2 = np.array(entro_of_batches) 
+    #y3 = np.array(np.divide(entro_of_batches,batch_time_list)) #checking to see how they differ
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y1, color='tab:blue',label="Batch/Iteration Time List")
+    ax.plot(x, y2, color='tab:red',label="Entropy")
+    #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
+    ax.set(xlabel='Batch/Iteration Nr ', ylabel=' Entropy/time(seconds) ',
+        title="Server's step and Clients(Step+Interstep) times")
+
+    # Major ticks every 20, minor ticks every 5
+    major_x_ticks = np.arange(0, count, 25)
+    minor_x_ticks = np.arange(0, count, 5)
+    major_y_ticks = np.arange(0, 8, 1)
+    minor_y_ticks = np.arange(0, 8, 0.5)
+    episode_stepsNr_indexes.append(count)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.legend(loc="upper right")
+
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+
+    print("DONE_DISPLAY")
+
+def display_entropyAggregated_batches(RL_res1):
+    current_function_name = inspect.stack()[0][3]
+
+    batch_time_list = []
+    batch_imgs_list = []
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
+    count = 1
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        nrSteps += len(episode)-1
+        episode_stepsNr_indexes.append(count) #used for displaying when an episode ends on the plot
+
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            first_client_iteration = step['client_iteration_metrics'][config.CLIENTS_LIST[0]]
+            for batch in first_client_iteration.values():
+                
+                batch_time_list.append(batch[0])
+                batch_imgs_list.append(batch[1])
+                count+=1
+    
+    entro_of_batches = entro.get_entropy_of_aggregated_img_batches(batch_imgs_list)
+                    
+
+    covariance = np.cov(batch_time_list,entro_of_batches)
+    print("COVARIANCE "+current_function_name+":")
+    print(covariance)
+    ###########################################################
+    x = range(1,len(batch_time_list)+1)
+    y1 = np.array(batch_time_list) 
+    y2 = np.array(entro_of_batches) 
+    #y3 = np.array(np.divide(entro_of_batches,batch_time_list)) #checking to see how they differ
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y1, color='tab:blue',label="Batch/Iteration Time List")
+    ax.plot(x, y2, color='tab:red',label="Entropy")
+    #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
+    ax.set(xlabel='Batch/Iteration Nr ', ylabel=' Entropy/time(seconds) ',
+        title="Server's step and Clients(Step+Interstep) times")
+
+    # Major ticks every 20, minor ticks every 5
+    major_x_ticks = np.arange(0, count, 25)
+    minor_x_ticks = np.arange(0, count, 5)
+    major_y_ticks = np.arange(0, 8, 1)
+    minor_y_ticks = np.arange(0, 8, 0.5)
+    episode_stepsNr_indexes.append(count)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.legend(loc="upper right")
+
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+
+    print("DONE_DISPLAY")
+
+def display_entropy_batches_avg_vs_aggregated(RL_res1):
+    current_function_name = inspect.stack()[0][3]
+    batch_time_list = []
+    batch_imgs_list = []
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
+    count = 1
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        nrSteps += len(episode)-1
+        episode_stepsNr_indexes.append(count) #used for displaying when an episode ends on the plot
+
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            first_client_iteration = step['client_iteration_metrics'][config.CLIENTS_LIST[0]]
+            for batch in first_client_iteration.values():
+                
+                batch_time_list.append(batch[0])
+                batch_imgs_list.append(batch[1])
+                count+=1
+    
+    entro_of_batches_avg = entro.get_avg_entropy_of_img_batches(batch_imgs_list)
+    entro_of_batches_agg = entro.get_entropy_of_aggregated_img_batches(batch_imgs_list)
+
+    covariance = np.cov(entro_of_batches_avg,entro_of_batches_agg)
+    print("COVARIANCE "+current_function_name+":")
+    print(covariance)
+    ###########################################################
+    x = range(1,len(batch_time_list)+1)
+    y1 = np.array(entro_of_batches_avg) 
+    y2 = np.array(entro_of_batches_agg) 
+    #y3 = np.array(np.divide(entro_of_batches,batch_time_list)) #checking to see how they differ
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y1, color='tab:blue',label="average")
+    ax.plot(x, y2, color='tab:red',label="aggregated")
+    #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
+    ax.set(xlabel='Batch/Iteration Nr ', ylabel=' Entropy ',
+        title="Entropy of batches")
+
+    # Major ticks every 20, minor ticks every 5
+    major_x_ticks = np.arange(0, count, 25)
+    minor_x_ticks = np.arange(0, count, 5)
+    major_y_ticks = np.arange(0, 8, 1)
+    minor_y_ticks = np.arange(0, 8, 0.5)
+    episode_stepsNr_indexes.append(count)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.legend(loc="upper right")
+    
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+def display_entropy_splitLayer(RL_res1):
+    current_function_name = inspect.stack()[0][3]
+
+    splitLayer_list = []
+    client_max_step_time_list = []
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        nrSteps += len(episode)-1
+        episode_stepsNr_indexes.append(nrSteps) #used for displaying when an episode ends on the plot
+
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            splitLayer_list.append(step['split_layer'])
+            client_max_step_time_list.append(max(step['client_step_time_total'].values()))
+            
+    
+    total_entropy = entro.get_splitLayer_entropy(splitLayer_list)
+    surprise_list = entro.get_all_splitLayer_surprise(splitLayer_list)
+    covariance = np.cov(surprise_list,client_max_step_time_list)
+    correlation = np.corrcoef(surprise_list,client_max_step_time_list)
+    print("COVARIANCE "+current_function_name+":")
+    print(covariance)
+    print("CORRELATION:")
+    print(correlation)
+    print("ENTROPY:")
+    print(total_entropy)
+    ###########################################################
+    x = range(1,len(surprise_list)+1)
+    y1 = np.array(client_max_step_time_list) 
+    y2 = np.array(surprise_list) 
+    #y3 = np.array(np.divide(entro_of_batches,batch_time_list)) #checking to see how they differ
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y1, color='tab:blue',label="Client Max Step Time")
+    ax.plot(x, y2, color='tab:red',label="Entropy SplitLayer")
+    #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
+    ax.set(xlabel='Step Nr', ylabel=' Entropy/time(seconds) ',
+        title="SplitLayer Entropy vs ClientMax Step Time")
+
+    # Major ticks every 20, minor ticks every 5
+    #major_x_ticks = np.arange(0, count, 25)
+    minor_x_ticks = np.arange(min(x), nrSteps, 5)
+    major_y_ticks = np.arange(0, max(max(y1),max(y2))*1.05, 1)
+    minor_y_ticks = np.arange(0, max(max(y1),max(y2))*1.05, 0.5)
+    episode_stepsNr_indexes.append(nrSteps)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.legend(loc="upper right")
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+
+    print("DONE_DISPLAY")
+
+def display_entropy_splitLayer_1Client(RL_res1,clientIdx):
+    current_function_name = inspect.stack()[0][3]
+
+    client_split_layer_list = []
+    client_step_time_list = []
+    client_idle_time_list = []
+    nrSteps = 1
+    episode_stepsNr_indexes = [nrSteps]
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        nrSteps += len(episode)-1
+        episode_stepsNr_indexes.append(nrSteps) #used for displaying when an episode ends on the plot
+
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+
+            client_split_layer_list.append(step['split_layer'][clientIdx])
+            client_step_time_list.append(step['client_step_time_total'][config.CLIENTS_LIST[clientIdx]])
+            #client_idle_time_list.append()
+        
+
+    total_entropy = entro.get_splitLayer_entropy(client_split_layer_list)
+    surprise_list = entro.get_all_splitLayer_surprise(client_split_layer_list)
+    covariance = np.cov(surprise_list,client_step_time_list)
+    correlation = np.corrcoef(surprise_list,client_step_time_list)
+    print("COVARIANCE "+current_function_name+":")
+    print(covariance)
+    print("CORRELATION:")
+    print(correlation)
+    print("ENTROPY:")
+    print(total_entropy)
+    ###########################################################
+    x = range(1,len(surprise_list)+1)
+    y1 = np.array(client_step_time_list) 
+    y2 = np.array(surprise_list) 
+    #y3 = np.array(np.divide(entro_of_batches,batch_time_list)) #checking to see how they differ
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y1, color='tab:blue',label="Client Step Time")
+    ax.plot(x, y2, color='tab:red',label="Entropy SplitLayer")
+    #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
+    ax.set(xlabel='Step Nr', ylabel=' Entropy/time(seconds) ',
+        title="SplitLayer Entropy vs Client Step Time; CLIENT "+str(clientIdx))
+
+    # Major ticks every 20, minor ticks every 5
+    #major_x_ticks = np.arange(0, count, 25)
+    minor_x_ticks = np.arange(min(x), nrSteps, 5)
+    major_y_ticks = np.arange(min(x), max(max(y1),max(y2))*1.05, 1)
+    minor_y_ticks = np.arange((min(x)), max(max(y1),max(y2))*1.05, 0.5)
+    episode_stepsNr_indexes.append(nrSteps)
+    episode_x_ticks = episode_stepsNr_indexes
+    
+    ###########################################################
+    ##No need to change bellow   
+    
+    ax.set_xticks(episode_x_ticks)
+    ax.set_xticks(minor_x_ticks, minor=True)
+    #ax.set_yticks(major_y_ticks)
+    #ax.set_yticks(minor_y_ticks, minor=True)
+
+    # And a corresponding grid
+    ax.grid(which='both')
+
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.legend(loc="upper right")
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+
+    print("DONE_DISPLAY")
+
+def test_toDelete():
+    x1 = [1,3]
+    x2 = [3,5]
+    x3 = [9,1]
+    x4 = [3,1]
+    x5 = [2,2]
+    x6 = [1,2]
+    
+    print("X1 X2")
+    print(np.cov(x1,x2))
+
+    print("X1 X3")
+    print(np.cov(x1,x3))
+
+    print("X1 X4")
+    print(np.cov(x1,x4))
+
+    print("X1 X5")
+    print(np.cov(x1,x5))
+
+    print("X1 X6")
+    print(np.cov(x1,x6))
+
+    print("X5 X4")
+    print(np.cov(x5,x4))
+
+    print("X4 X5")
+    print(np.cov(x4,x5))
+
+
 if __name__ == "__main__":
-    metrics_file = "RL_Metrics3"
+    metrics_file = "RL_Metrics4"
+    metrics_file2 = "RL_Metrics5_NoOffloading"
     with open("./results/"+metrics_file+ ".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
+    # with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
+        # RL_res2 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
     # display_maxIterTime(RL_res1)
     # display_server_and_client_steptime(RL_res1)
     # display_server_and_client_maxSteptime(RL_res1)
-    ##Show Nishant
-    display_server_and_client_idle_time(RL_res1)
-    display_server_and_client_maxNmin_idle_time(RL_res1)
-    display_server_client_stepNidle_time(RL_res1)
-    display_1st_client_splitLayers_and_idle_time(RL_res1)
-    display_add_client_interstep_time(RL_res1)
-    
+    ##
+    #display_server_and_client_idle_time(RL_res1)
+    #display_server_and_client_maxNmin_idle_time(RL_res1)
+    #display_server_client_stepNidle_time(RL_res1)
+    #display_1st_client_splitLayers_and_idle_time(RL_res1)
+    #display_add_client_interstep_time(RL_res1)
+    #v entropy v#
+    # display_entropyOnAvg_batches(RL_res2)
+    # display_entropyAggregated_batches(RL_res2)
+    # display_entropy_batches_avg_vs_aggregated(RL_res2)
+    # display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
+    display_entropy_splitLayer_1Client(RL_res1,0)
+    display_entropy_splitLayer_1Client(RL_res1,3)
+
+    #TODO individual entropy for client X vs train time/ idle time
+
+    #test_toDelete()
     print("Loaded Metrics dataset")
+
+
