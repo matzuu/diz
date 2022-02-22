@@ -1034,7 +1034,7 @@ def display_entropy_splitLayer(RL_res1):
 
     print("DONE_DISPLAY")
 
-def display_entropy_splitLayer_1Client(RL_res1,clientIdx):
+def display_entropy_splitLayer_SingleClient(RL_res1,clientIdx):
     current_function_name = inspect.stack()[0][3]
 
     client_split_layer_list = []
@@ -1162,9 +1162,9 @@ if __name__ == "__main__":
     # display_entropyOnAvg_batches(RL_res2)
     # display_entropyAggregated_batches(RL_res2)
     # display_entropy_batches_avg_vs_aggregated(RL_res2)
-    # display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
-    display_entropy_splitLayer_1Client(RL_res1,0)
-    display_entropy_splitLayer_1Client(RL_res1,3)
+    display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
+    display_entropy_splitLayer_SingleClient(RL_res1,0)
+    display_entropy_splitLayer_SingleClient(RL_res1,3)
 
     #TODO individual entropy for client X vs train time/ idle time
 

@@ -138,9 +138,9 @@ class Env(Communicator):
 		######################
 		##Forcing No Offload##
 		######################
-		config.split_layer = [6,6,6,6,6]
-		split_layers = [6,6,6,6,6]
-		self.split_layers = [6,6,6,6,6]
+		# config.split_layer = [6,6,6,6,6]
+		# split_layers = [6,6,6,6,6]
+		# self.split_layers = [6,6,6,6,6]
 		#################
 		msg = ['RESET_FLAG', False]
 		self.scatter(msg)
