@@ -116,7 +116,7 @@ class Env(Communicator):
 		return kmeans, cluster_centers, labels
 
 
-	def step(self, action, done):
+	def step(self, action, done): #TODO done is not used?
 		# Expand action to each device and initialization
 		action = self.expand_actions(action, self.clients_list)
 		#offloadings = 1 - np.clip(np.array(action), 0, 1)
@@ -176,6 +176,7 @@ class Env(Communicator):
 		self.nets = {}
 		self.optimizers = {}
 		self.step_client_offloading_idle_time = {}
+		self.tolerance_counts = config.tolerance_counts
 		self.step_client_interstep_idle_time = 0.0 #Will be modified if it's not the first step and Val will be modified;
 		for i in range(len(split_layers)):
 			client_ip = config.CLIENTS_LIST[i]
@@ -317,7 +318,7 @@ class Env(Communicator):
 		state = np.append(infer_state_order, offloading_state_order)
 		return state
 
-	def calculate_reward(self, infer_state):
+	def calculate_reward(self, infer_state): #TODO, change how the reward function is calculated; instead of iter time, max client step time?
 		rewards = {}
 		reward = 0
 		done = False
@@ -326,9 +327,11 @@ class Env(Communicator):
 		max_infertime = max(infer_state.items(), key=operator.itemgetter(1))[1]
 		max_infertime_index = max(infer_state.items(), key=operator.itemgetter(1))[0]
 			   
-		if max_infertime >= 1 * max_basetime:
-			done = True
-			#reward += - 1
+		if max_infertime >= config.tolerance_percent * max_basetime: #Default tolerance_percent == 1.0
+			self.tolerance_counts -= 1
+			if self.tolerance_counts < 1:
+				done = True
+				#reward += - 1
 		else:
 			done = False
 
