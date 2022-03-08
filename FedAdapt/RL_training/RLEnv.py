@@ -61,6 +61,7 @@ class Env(Communicator):
 		config.split_layer = split_layers
 		thread_number = config.K
 		client_ips = config.CLIENTS_LIST
+		self.tolerance_counts = config.tolerance_counts
 		self.initialize(split_layers)
 		msg = ['RESET_FLAG', True]
 		self.scatter(msg)
@@ -176,7 +177,6 @@ class Env(Communicator):
 		self.nets = {}
 		self.optimizers = {}
 		self.step_client_offloading_idle_time = {}
-		self.tolerance_counts = config.tolerance_counts
 		self.step_client_interstep_idle_time = 0.0 #Will be modified if it's not the first step and Val will be modified;
 		for i in range(len(split_layers)):
 			client_ip = config.CLIENTS_LIST[i]
@@ -329,7 +329,7 @@ class Env(Communicator):
 			   
 		if max_infertime >= config.tolerance_percent * max_basetime: #Default tolerance_percent == 1.0
 			self.tolerance_counts -= 1
-			if self.tolerance_counts < 1:
+			if self.tolerance_counts < 0:
 				done = True
 				#reward += - 1
 		else:

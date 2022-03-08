@@ -1000,10 +1000,10 @@ def display_entropy_splitLayer(RL_res1):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(x, y1, color='tab:blue',label="Client Max Step Time")
-    ax.plot(x, y2, color='tab:red',label="Entropy SplitLayer")
+    ax.plot(x, y2, color='tab:red',label="Surprise SplitLayer")
     #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
-    ax.set(xlabel='Step Nr', ylabel=' Entropy/time(seconds) ',
-        title="SplitLayer Entropy vs ClientMax Step Time")
+    ax.set(xlabel='Step Nr', ylabel=' Surprise/time(seconds) ',
+        title="SplitLayer Surprise vs ClientMax Step Time")
 
     # Major ticks every 20, minor ticks every 5
     #major_x_ticks = np.arange(0, count, 25)
@@ -1075,10 +1075,10 @@ def display_entropy_splitLayer_SingleClient(RL_res1,clientIdx):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(x, y1, color='tab:blue',label="Client Step Time")
-    ax.plot(x, y2, color='tab:red',label="Entropy SplitLayer")
+    ax.plot(x, y2, color='tab:red',label="Surprise SplitLayer")
     #ax.plot(x, y3, color='tab:red',label="Entropy/Time")
-    ax.set(xlabel='Step Nr', ylabel=' Entropy/time(seconds) ',
-        title="SplitLayer Entropy vs Client Step Time; CLIENT "+str(clientIdx))
+    ax.set(xlabel='Step Nr', ylabel=' Surprise/time(seconds) ',
+        title="SplitLayer Surprise vs Client Step Time; CLIENT "+str(clientIdx))
 
     # Major ticks every 20, minor ticks every 5
     #major_x_ticks = np.arange(0, count, 25)
@@ -1140,31 +1140,31 @@ def test_toDelete():
 
 
 if __name__ == "__main__":
-    metrics_file = "RL_Metrics4"
+    metrics_file = "RL_Metrics6"
     metrics_file2 = "RL_Metrics5_NoOffloading"
     with open("./results/"+metrics_file+ ".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    # with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
-        # RL_res2 = pickle.load(f)
+    #with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
+    #    RL_res2 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
     # display_maxIterTime(RL_res1)
     # display_server_and_client_steptime(RL_res1)
     # display_server_and_client_maxSteptime(RL_res1)
-    ##
-    #display_server_and_client_idle_time(RL_res1)
-    #display_server_and_client_maxNmin_idle_time(RL_res1)
-    #display_server_client_stepNidle_time(RL_res1)
-    #display_1st_client_splitLayers_and_idle_time(RL_res1)
-    #display_add_client_interstep_time(RL_res1)
-    #v entropy v#
-    # display_entropyOnAvg_batches(RL_res2)
-    # display_entropyAggregated_batches(RL_res2)
-    # display_entropy_batches_avg_vs_aggregated(RL_res2)
-    display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
-    display_entropy_splitLayer_SingleClient(RL_res1,0)
-    display_entropy_splitLayer_SingleClient(RL_res1,3)
+    # ####
+    # display_server_and_client_idle_time(RL_res1)
+    # display_server_and_client_maxNmin_idle_time(RL_res1)
+    # display_server_client_stepNidle_time(RL_res1)
+    # display_1st_client_splitLayers_and_idle_time(RL_res1)
+    # display_add_client_interstep_time(RL_res1)
+    ####v entropy v#
+    # display_entropyOnAvg_batches(RL_res1) #Also RL_res2
+    # display_entropyAggregated_batches(RL_res1) #Also RL_res2
+    # display_entropy_batches_avg_vs_aggregated(RL_res1) #Also RL_res2
+    # display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
+    # display_entropy_splitLayer_SingleClient(RL_res1,0)
+    # display_entropy_splitLayer_SingleClient(RL_res1,3)
 
     #TODO individual entropy for client X vs train time/ idle time
 
@@ -1172,3 +1172,6 @@ if __name__ == "__main__":
     print("Loaded Metrics dataset")
 
 
+    #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices
+
+    #TODO check tolerance level, how does it affect # need to ave more runs
