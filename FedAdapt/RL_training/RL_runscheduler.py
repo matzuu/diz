@@ -12,6 +12,9 @@ def objective1():
     print("########################## \nOBJECTIVE 1")
     episode_range = [1,2,3]
     iteration_range = [3,5]
+    ################
+    config.max_timesteps = 5
+    ##################
     for e in episode_range:
         config.max_episodes = e
         for i in iteration_range:
@@ -22,9 +25,9 @@ def objective1():
                 
                 print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+"\n##########################")                
                 start_run()
-            except:
+            except Exception as exception:
                 print("EXCEPTION OCCURED DURING RUN: E "+str(e)+" ,i "+str(i))
-
+                print(exception)
                 ###TODO: Try with clients; check if server start/ipaddress assignation is a problem
 
             time_server_finish = time.perf_counter()
