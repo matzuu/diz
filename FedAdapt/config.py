@@ -54,6 +54,7 @@ exploration_times = 20	   # exploration times without std decay
 n_latent_var = 64          # number of variables in hidden layer
 action_std = 0.5           # constant std for action distribution (Multivariate Normal)
 update_timestep = 10       # update policy every n timesteps
+control_update_epoch = 10  ##### Stop the steps training after X values.(results in episodes with 1 step) Not sure exactly the reason for implementation.
 K_epochs = 50              # update policy for K epochs
 eps_clip = 0.2             # clip parameter for PPO
 rl_gamma = 0.9             # discount factor

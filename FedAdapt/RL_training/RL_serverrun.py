@@ -1,4 +1,4 @@
-if __name__ == "__main__":
+def server_main():
 	import pickle
 	import torch
 	import tqdm
@@ -16,7 +16,6 @@ if __name__ == "__main__":
 	import RLEnv
 	import PPO
 	import time
-
 	time_server_start = time.perf_counter()
 
 	if config.random:
@@ -42,7 +41,6 @@ if __name__ == "__main__":
 	res = {}
 	res['rewards'], res['maxtime'], res['actions'], res['std'] = [], [], [], []
 	metrics_dict = dict()
-	
 
 	for i_episode in tqdm.tqdm(range(1, config.max_episodes+1)):
 		###############
@@ -135,7 +133,8 @@ if __name__ == "__main__":
 		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		with open(config.home + '/results/RL_Metrics8_Tol2.pkl','wb') as f:
+		metrics_file_name = '/results/RL_Metrics9'
+		with open(config.home + metrics_file_name,'wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	##Out of Episode loop
@@ -143,6 +142,12 @@ if __name__ == "__main__":
 	metrics_dict["RL_time_total"] = time_server_finish - time_server_start
 	metrics_dict["tolerance_count"] = config.tolerance_counts
 	metrics_dict["tolerance_percent"] = config.tolerance_percent
+
+	with open(config.home + metrics_file_name,'wb') as f:
+					pickle.dump(metrics_dict,f)
+
 	print("Finished RL_serverrun")
 		
 
+if __name__ == "__main__":
+	server_main()

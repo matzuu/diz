@@ -962,7 +962,7 @@ def display_entropy_batches_avg_vs_aggregated(RL_res1):
     fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
     plt.show()      
 
-def display_entropy_splitLayer(RL_res1):
+def display_surprise_vs_stepTime_ALL_splitLayer(RL_res1):
     current_function_name = inspect.stack()[0][3]
 
     splitLayer_list = []
@@ -1034,7 +1034,7 @@ def display_entropy_splitLayer(RL_res1):
 
     print("DONE_DISPLAY")
 
-def display_entropy_splitLayer_SingleClient(RL_res1,clientIdx):
+def display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res1,clientIdx):
     current_function_name = inspect.stack()[0][3]
 
     client_split_layer_list = []
@@ -1109,43 +1109,95 @@ def display_entropy_splitLayer_SingleClient(RL_res1,clientIdx):
 
     print("DONE_DISPLAY")
 
-def test_toDelete():
-    x1 = [1,3]
-    x2 = [3,5]
-    x3 = [9,1]
-    x4 = [3,1]
-    x5 = [2,2]
-    x6 = [1,2]
+def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,clientIdx):
+    current_function_name = inspect.stack()[0][3]
+
+    client_split_layer_matrix = [[],[],[]] #used for surprise calculation
+    client_step_time_matrix = [[],[],[]]
+    client_surprise_matrix = [[],[],[]]
+
+    for episode_index in (range(1,len(RL_res1))): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+        
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+
+            client_split_layer_matrix[0].append(step['split_layer'][clientIdx])
+            client_step_time_matrix[0].append(step['client_step_time_total'][config.CLIENTS_LIST[clientIdx]])
+            #client_idle_time_list.append()
     
-    print("X1 X2")
-    print(np.cov(x1,x2))
+        episode = RL_res2["episode_"+str(episode_index)] #Get Episode value
+        
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
 
-    print("X1 X3")
-    print(np.cov(x1,x3))
+            client_split_layer_matrix[1].append(step['split_layer'][clientIdx])
+            client_step_time_matrix[1].append(step['client_step_time_total'][config.CLIENTS_LIST[clientIdx]])
+            #client_idle_time_list.append()
+        episode = RL_res3["episode_"+str(episode_index)] #Get Episode value
+        
+        for step_index in range(len(episode)-1): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
 
-    print("X1 X4")
-    print(np.cov(x1,x4))
+            client_split_layer_matrix[2].append(step['split_layer'][clientIdx])
+            client_step_time_matrix[2].append(step['client_step_time_total'][config.CLIENTS_LIST[clientIdx]])
+            #client_idle_time_list.append()
+        
+    print("IN_FUNCTION: "+current_function_name)
+    for i in range(3):  
 
-    print("X1 X5")
-    print(np.cov(x1,x5))
+        total_entropy = entro.get_splitLayer_entropy(client_split_layer_matrix[i])
+        surprise_list = entro.get_all_splitLayer_surprise(client_split_layer_matrix[i])
+        client_surprise_matrix[i] = surprise_list
+        covariance = np.cov(surprise_list,client_step_time_matrix[i])
+        correlation = np.corrcoef(surprise_list,client_step_time_matrix[i])
+        print("#######################\n## DATA "+str(i)+" ###")
+        print("COVARIANCE:")
+        print(covariance)
+        print("CORRELATION:")
+        print(correlation)
+        print("ENTROPY:")
+        print(total_entropy)
+        print("#######################")
+    ###########################################################
+    data = client_step_time_matrix
+    
+    fig = plt.figure()
 
-    print("X1 X6")
-    print(np.cov(x1,x6))
+    ax = fig.add_subplot(1,1,1)
+ 
+    # Creating plot
+    bp = ax.boxplot(data)    
 
-    print("X5 X4")
-    print(np.cov(x5,x4))
 
-    print("X4 X5")
-    print(np.cov(x4,x5))
+    major_y_ticks = np.arange(0, max(max(data[0]),max(data[1]),max(data[2]))*1.05, 1)
+    minor_y_ticks = np.arange(0, max(max(data[0]),max(data[1]),max(data[2]))*1.05, 0.2)
+    ax.set_yticks(major_y_ticks)
+    ax.set_yticks(minor_y_ticks, minor=True)
+    ax.grid(which='both')
+    # Or if you want different settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=0.8)
+    ax.set_title("StepTime with tolerance 0,1,2 for client"+str(clientIdx))
+    
+    fig.savefig("./results/"+metrics_file+"_"+current_function_name+".png")
+    plt.show()      
+
+
+    print("DONE_DISPLAY")
 
 
 if __name__ == "__main__":
-    metrics_file = "RL_Metrics6"
-    metrics_file2 = "RL_Metrics5_NoOffloading"
+    metrics_file = "RL_Metrics8_Tol0"
+    metrics_file2 = "RL_Metrics8_Tol1"
+    metrics_file3 = "RL_Metrics8_Tol2"
     with open("./results/"+metrics_file+ ".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    #with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
-    #    RL_res2 = pickle.load(f)
+    with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
+        RL_res2 = pickle.load(f)
+    with open("./results/"+metrics_file3+ ".pkl", 'rb') as f:
+        RL_res3 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
@@ -1162,16 +1214,26 @@ if __name__ == "__main__":
     # display_entropyOnAvg_batches(RL_res1) #Also RL_res2
     # display_entropyAggregated_batches(RL_res1) #Also RL_res2
     # display_entropy_batches_avg_vs_aggregated(RL_res1) #Also RL_res2
-    # display_entropy_splitLayer(RL_res1)   ##IMPORTANT ; Good find
-    # display_entropy_splitLayer_SingleClient(RL_res1,0)
-    # display_entropy_splitLayer_SingleClient(RL_res1,3)
+    # display_surprise_vs_stepTime_ALL_splitLayer(RL_res1)   ##IMPORTANT ; Good find
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res1,0)
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res1,3)
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res2,0)
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res2,3)
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res3,0)
+    # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res3,3)
 
-    #TODO individual entropy for client X vs train time/ idle time
-
-    #test_toDelete()
-    print("Loaded Metrics dataset")
+    display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
+    ### Maybe also do it for idle time? ^
 
 
-    #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices
 
-    #TODO check tolerance level, how does it affect # need to ave more runs
+    #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices (can also do it for 5)
+
+    #TODO FIRST, Increase hyperparameter for update_epoch, check results
+
+    #Step time vs vs rewards?
+
+    #add tollerance count in each step METRICS
+
+    #LOookg at tollerance values vs rewards
+    print("FINIIIIIISH")

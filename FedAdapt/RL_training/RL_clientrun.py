@@ -1,4 +1,4 @@
-if __name__ == "__main__":
+def client_main():
 	import torch
 	import socket
 	import multiprocessing
@@ -49,7 +49,8 @@ if __name__ == "__main__":
 		else:
 			rl_client.infer(trainloader)
 
-		
+if __name__ == "__main__":
+	client_main()
 		
 
 
