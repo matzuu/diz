@@ -55,7 +55,7 @@ def client_main():
 			logger.info('## FINISHING_RUN: gathering metrics...')
 			cpu_usage_percent = psutil.cpu_percent()
 			ram_usage = psutil.virtual_memory()
-			disk_usage = psutil.disk_usage()
+			disk_usage = psutil.disk_usage('/')
 			cpu_RW,ram_RW,disk_RW = rl_client.calculate_resource_wastage_client(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 			### send message:
 			rl_client.send_msg_run_finished_client(cpu_RW,ram_RW,disk_RW)

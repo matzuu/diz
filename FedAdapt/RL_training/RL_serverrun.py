@@ -141,7 +141,7 @@ def server_main(run_identifier: str):
 		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		
+
 		metrics_file_path = config.home + '/results/RL_Metrics_' + run_identifier
 		with open(metrics_file_path,'wb') as f:
 					pickle.dump(metrics_dict,f)
@@ -155,7 +155,7 @@ def server_main(run_identifier: str):
 	
 	cpu_usage_percent = psutil.cpu_percent()
 	ram_usage = psutil.virtual_memory()
-	disk_usage = psutil.disk_usage()
+	disk_usage = psutil.disk_usage('/')
 	env.calculate_resource_wastage_server(time_client_total,psutil.cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 	#################################
 
