@@ -6,6 +6,7 @@ import config
 from RL_serverrun import server_main
 from RL_clientrun import client_main
 import time
+import psutil
 
 def objective1():
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
@@ -30,6 +31,7 @@ def objective1():
                 print(exception)
                 ###TODO: Try with clients; check if server start/ipaddress assignation is a problem
 
+            print("CPU_PERCENT_RUN: "+ str(psutil.cpu_percent()))
             time_server_finish = time.perf_counter()
             print("RUN TIME: "+ str(time_server_finish-time_server_start))
 

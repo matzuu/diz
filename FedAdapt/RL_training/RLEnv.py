@@ -202,7 +202,7 @@ class Env(Communicator):
 		msg = ['MSG_TEST_NETWORK_SPEED', self.uninet.cpu().state_dict()]
 		self.send_msg(self.client_socks[client_ip], msg)
 
-	def infer(self, thread_number, client_ips):
+	def infer(self, thread_number, client_ips): #Server infer
 		self.threads = {}
 		for i in range(len(client_ips)):
 			if self.split_layers[i] == config.model_len -1:
@@ -396,7 +396,7 @@ class RL_Client(Communicator):
 		msg = ['MSG_TEST_NETWORK_SPEED', self.ip, network_speed]
 		self.send_msg(self.sock, msg)
 
-	def infer(self, trainloader):
+	def infer(self, trainloader):  #Client Infer
 		self.net.to(self.device)
 		self.net.train()
 		metrics_current_infer = {}
