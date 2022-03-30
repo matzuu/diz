@@ -30,14 +30,18 @@ def objective1():
 
                 ####################
                 start_run(run_identifier)
+                
             except Exception as exception:
                 print("EXCEPTION OCCURED DURING RUN: E "+str(e)+" ,i "+str(i))
                 print(exception)
                 ###TODO: Try with clients; check if server start/ipaddress assignation is a problem
 
+            
             print("CPU_PERCENT_RUN: "+ str(psutil.cpu_percent()))
             time_server_finish = time.perf_counter()
             print("RUN TIME: "+ str(time_server_finish-time_server_start))
+            print("Waiting 10s for address deallocation...")
+            time.sleep(10) #waiting for de-allocation of server address
 
 def objective2():
     #Reward, etc??
