@@ -42,6 +42,7 @@ def objective1():
             print("RUN TIME: "+ str(time_server_finish-time_server_start))
             print("Waiting 10s for address deallocation...")
             time.sleep(10) #waiting for de-allocation of server address
+            print("Finished iteration")
 
 def objective2():
     #Reward, etc??

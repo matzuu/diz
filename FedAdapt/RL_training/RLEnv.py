@@ -368,15 +368,12 @@ class Env(Communicator):
 		return split_layer
 
 	def run_finished_metrics_client_handling(self):
-		msg = ['RUN_FINISHED',True]
+		msg = ['NEXT_COMMAND','RUN_FINISHED']
 		self.scatter(msg)
 		## Wait for return message with metrics
 
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'RUN_FINISHED_METRICS')
-			##DO STUFF WITH METRICS
-			## REWRITE BOTTOM METRICS
-
 			self.cpu_wastage[msg[1]] = msg[2]
 			self.ram_wastage[msg[1]] = msg[3]  #msg[1] = 'ip.addres'
 			self.disk_wastage[msg[1]] = msg[4]
