@@ -484,7 +484,7 @@ class RL_Client(Communicator):
 		self.send_msg(self.sock, msg)
 		return
 
-	def calculate_resource_wastage_client(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
+	def calculate_resource_wastage_client(self,time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
 		return calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 
 
