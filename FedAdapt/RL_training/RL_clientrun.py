@@ -1,7 +1,9 @@
+from psutil import cpu_percent
+
+
 def client_main():
 	import torch
 	import socket
-	import multiprocessing
 	import numpy as np
 
 	import logging
@@ -13,7 +15,13 @@ def client_main():
 	from RLEnv import RL_Client
 	import config
 	import utils
+	import psutil
+	import time
 
+	psutil.cpu_percent() #Start monitoring Resource Usage Metrics
+	#Also monitor RAM here?
+	
+	time_client_start = time.perf_counter()
 	if config.random:
 		torch.manual_seed(config.random_seed)
 		np.random.seed(config.random_seed)
@@ -26,20 +34,33 @@ def client_main():
 	split_layer = config.split_layer[index]
 
 	logger.info('==> Preparing Data..')
-	cpu_count = multiprocessing.cpu_count()
+	cpu_count = psutil.cpu_count()
 	trainloader, classes= utils.get_local_dataloader(index, cpu_count)
 
 	logger.info('==> Preparing RL_Client..')
 	rl_client = RL_Client(index, ip_address, config.SERVER_ADDR, config.SERVER_PORT, datalen, config.model_name, split_layer, config.model_cfg)
 
 	while True:
-		reset_flag = rl_client.recv_msg(rl_client.sock, 'RESET_FLAG')[1]
-		if reset_flag:
-			rl_client.initialize(len(config.model_cfg[config.model_name])-1)
-		else:
+		command = rl_client.recv_msg(rl_client.sock, 'NEXT_COMMAND')[1]
+		if command == 'RESET':
+			rl_client.initialize(len(config.model_cfg[config.model_name])-1) #initialize with llen of model -1 <==> 7 - 1 = 6; NO offloading
+		elif command == 'CONTINUE_COMPUTING':
 			logger.info('==> Next Timestep..')
 			config.split_layer = rl_client.recv_msg(rl_client.sock, 'SPLIT_LAYERS')[1]
-			rl_client.reinitialize(config.split_layer[index])
+			rl_client.reinitialize(config.split_layer[index]) #Initialize with current split_layer value, (potential) offloading
+		elif command == 'RUN_FINISHED':
+			time_client_finish = time.perf_counter()
+			time_client_total = time_client_finish - time_client_start
+			###GATHER METRICS
+			logger.info('## FINISHING_RUN: gathering metrics...')
+			cpu_usage_percent = psutil.cpu_percent()
+			ram_usage = psutil.virtual_memory()
+			disk_usage = psutil.disk_usage()
+			cpu_RW,ram_RW,disk_RW = rl_client.calculate_resource_wastage_client(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
+			### send message:
+			rl_client.send_msg_run_finished_client(cpu_RW,ram_RW,disk_RW)
+			return
+		
 
 		logger.info('==> Training Start..')
 		if first:

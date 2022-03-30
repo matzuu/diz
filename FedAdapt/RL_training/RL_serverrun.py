@@ -1,4 +1,10 @@
-def server_main():
+def server_main(run_identifier: str):
+	import time
+	time_server_start = time.perf_counter()
+
+	import psutil
+	psutil.cpu_percent()
+
 	import pickle
 	import torch
 	import tqdm
@@ -15,8 +21,9 @@ def server_main():
 	import utils
 	import RLEnv
 	import PPO
-	import time
-	time_server_start = time.perf_counter()
+	
+
+	
 
 	if config.random:
 		torch.manual_seed(config.random_seed)
@@ -134,17 +141,32 @@ def server_main():
 		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
-		metrics_file_name = '/results/RL_Metrics9'
-		with open(config.home + metrics_file_name,'wb') as f:
+		
+		metrics_file_path = config.home + '/results/RL_Metrics_' + run_identifier
+		with open(metrics_file_path,'wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	##Out of Episode loop
-	time_server_finish= time.perf_counter()
+	env.run_finished_metrics_client_handling()
+
+	#################################
+	time_server_finish = time.perf_counter()
+	time_client_total = time_server_finish - time_server_start
+	
+	cpu_usage_percent = psutil.cpu_percent()
+	ram_usage = psutil.virtual_memory()
+	disk_usage = psutil.disk_usage()
+	env.calculate_resource_wastage_server(time_client_total,psutil.cpu_count,cpu_usage_percent,ram_usage,disk_usage)
+	#################################
+
 	metrics_dict["RL_time_total"] = time_server_finish - time_server_start
 	metrics_dict["tolerance_count"] = config.tolerance_counts
 	metrics_dict["tolerance_percent"] = config.tolerance_percent
+	metrics_dict["cpu_wastage"] = env.cpu_wastage
+	metrics_dict["ram_wastage"] = env.ram_wastage
+	metrics_dict["disk_wastage"] = env.disk_wastage
 
-	with open(config.home + metrics_file_name,'wb') as f:
+	with open(metrics_file_path,'wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	print("Finished RL_serverrun")

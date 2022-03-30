@@ -63,7 +63,7 @@ class Env(Communicator):
 		client_ips = config.CLIENTS_LIST
 		self.tolerance_counts = config.tolerance_counts
 		self.initialize(split_layers)
-		msg = ['RESET_FLAG', True]
+		msg = ['NEXT_COMMAND', 'RESET']
 		self.scatter(msg)
 
 		#Test network speed
@@ -143,7 +143,7 @@ class Env(Communicator):
 		# split_layers = [6,6,6,6,6]
 		# self.split_layers = [6,6,6,6,6]
 		#################
-		msg = ['RESET_FLAG', False]
+		msg = ['NEXT_COMMAND', 'CONTINUE_COMPUTING']
 		self.scatter(msg)
 
 		msg = ['SPLIT_LAYERS',config.split_layer]
@@ -178,6 +178,10 @@ class Env(Communicator):
 		self.optimizers = {}
 		self.step_client_offloading_idle_time = {}
 		self.step_client_interstep_idle_time = 0.0 #Will be modified if it's not the first step and Val will be modified;
+		self.cpu_wastage = {}
+		self.ram_wastage = {}
+		self.disk_wastage= {}
+
 		for i in range(len(split_layers)):
 			client_ip = config.CLIENTS_LIST[i]
 			self.step_client_offloading_idle_time[client_ip] = [] #Iteration Idle time
@@ -363,6 +367,28 @@ class Env(Communicator):
 			split_layer.append(idx)
 		return split_layer
 
+	def run_finished_metrics_client_handling(self):
+		msg = ['RUN_FINISHED',True]
+		self.scatter(msg)
+		## Wait for return message with metrics
+
+		for s in self.client_socks:
+			msg = self.recv_msg(self.client_socks[s], 'RUN_FINISHED_METRICS')
+			##DO STUFF WITH METRICS
+			## REWRITE BOTTOM METRICS
+
+			self.cpu_wastage[msg[1]] = msg[2]
+			self.ram_wastage[msg[1]] = msg[3]  #msg[1] = 'ip.addres'
+			self.disk_wastage[msg[1]] = msg[4]
+		return
+
+	def calculate_resource_wastage_server(self,time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
+		cpu_wastage,ram_wastage,disk_wastage = calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
+		self.cpu_wastage['server'] = cpu_wastage
+		self.ram_wastage['server'] = ram_wastage
+		self.disk_wastage['server'] = disk_wastage
+		return
+
 		
 
 class RL_Client(Communicator):
@@ -456,6 +482,22 @@ class RL_Client(Communicator):
 	def reinitialize(self, split_layers):
 		self.initialize(split_layers)
 
+	def send_msg_run_finished_client(self, cpu_RW, ram_RW, disk_RW):
+		msg = ['RUN_FINISHED_METRICS', self.ip, cpu_RW,ram_RW,disk_RW] 
+		self.send_msg(self.sock, msg)
+		return
+
+	def calculate_resource_wastage_client(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
+		return calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 
 
-		
+def calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
+	#CPU resource wastage == %idle_time * nr_cpus * time(s)
+	cpu_RW = ((100.0-cpu_usage_percent)/100) * cpu_count * time_client_total
+	# RAM wastage == GB_count of available/free ram *time(s)
+	ram_available = ram_usage.available / (1024*1024*1024) # Available_bytes/1GB 
+	ram_RW = ram_available * time_client_total
+	# DISK wastage == 5gb ; doesn't make sense for time?
+	disk_available = disk_usage.free / (1024*1024*1024) # Available_bytes/1GB
+	disk_RW = (disk_available/5) * time_client_total
+	return cpu_RW,ram_RW,disk_RW	

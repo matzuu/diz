@@ -24,8 +24,12 @@ def objective1():
             time_server_start = time.perf_counter()
             try:
                 
-                print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+"\n##########################")                
-                start_run()
+                print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+"\n##########################")   
+                #######################             
+                run_identifier = "E"+str(e)+"_I"+str(i)
+
+                ####################
+                start_run(run_identifier)
             except Exception as exception:
                 print("EXCEPTION OCCURED DURING RUN: E "+str(e)+" ,i "+str(i))
                 print(exception)
@@ -39,10 +43,10 @@ def objective2():
     #Reward, etc??
     print("OBJECTIVE 2")
 
-def start_run():
+def start_run(run_identifier):
     device_type = sys.argv[1]
     if device_type == "server":
-        server_main()
+        server_main(run_identifier)
     if device_type == "client":
         client_main()
 
