@@ -43,11 +43,12 @@ class Env(Communicator):
 		self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 		self.port = server_port
 		self.model_name = model_name
+		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TO reuse the address
 		self.sock.bind((self.ip, self.port))
 		self.client_socks = {}
 
 		while len(self.client_socks) < config.K:
-			self.sock.listen(5)
+			self.sock.listen(config.K)
 			logger.info("Waiting Incoming Connections.")
 			(client_sock, (ip, port)) = self.sock.accept()
 			logger.info('Got connection from ' + str(ip))
@@ -377,6 +378,10 @@ class Env(Communicator):
 			self.cpu_wastage[msg[1]] = msg[2]
 			self.ram_wastage[msg[1]] = msg[3]  #msg[1] = 'ip.addres'
 			self.disk_wastage[msg[1]] = msg[4]
+
+		#Send close signal to other devices
+		self.sock.shutdown(socket.SHUT_RDWR)
+		self.sock.close()
 		return
 
 	def calculate_resource_wastage_server(self,time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):

@@ -156,7 +156,8 @@ def server_main(run_identifier: str):
 	cpu_usage_percent = psutil.cpu_percent()
 	ram_usage = psutil.virtual_memory()
 	disk_usage = psutil.disk_usage('/')
-	env.calculate_resource_wastage_server(time_client_total,psutil.cpu_count,cpu_usage_percent,ram_usage,disk_usage)
+	cpu_count = psutil.cpu_count()
+	env.calculate_resource_wastage_server(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 	#################################
 
 	metrics_dict["RL_time_total"] = time_server_finish - time_server_start
@@ -173,4 +174,4 @@ def server_main(run_identifier: str):
 		
 
 if __name__ == "__main__":
-	server_main()
+	server_main("_single_test")
