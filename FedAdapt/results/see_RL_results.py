@@ -1189,14 +1189,14 @@ def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,c
 
 
 if __name__ == "__main__":
-    metrics_file = "RL_Metrics8_Tol0"
-    metrics_file2 = "RL_Metrics8_Tol1"
-    metrics_file3 = "RL_Metrics8_Tol2"
-    with open("./results/"+metrics_file+ ".pkl", 'rb') as f:
+    metrics_file = "RL_Metrics_E1_I3"
+    metrics_file2 = "RL_Metrics_E2_I5"
+    metrics_file3 = "RL_Metrics_E3_I5"
+    with open("./results/"+metrics_file, 'rb') as f:
         RL_res1 = pickle.load(f)
-    with open("./results/"+metrics_file2+ ".pkl", 'rb') as f:
+    with open("./results/"+metrics_file2, 'rb') as f:
         RL_res2 = pickle.load(f)
-    with open("./results/"+metrics_file3+ ".pkl", 'rb') as f:
+    with open("./results/"+metrics_file3, 'rb') as f:
         RL_res3 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
@@ -1222,7 +1222,7 @@ if __name__ == "__main__":
     # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res3,0)
     # display_surprise_vs_stepTime_splitLayer_SingleClient(RL_res3,3)
 
-    display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
+    #display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
     ### Maybe also do it for idle time? ^
 
 

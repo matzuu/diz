@@ -142,12 +142,13 @@ def server_main(run_identifier: str):
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
 
-		metrics_file_path = config.home + '/results/RL_Metrics_' + run_identifier
+		metrics_file_path = config.home + '/results/RL_Metrics_' + run_identifier + ".pkl"
 		with open(metrics_file_path,'wb') as f:
 					pickle.dump(metrics_dict,f)
 
 	##Out of Episode loop
 	env.run_finished_metrics_client_handling()
+	env.close_connections()
 
 	#################################
 	time_server_finish = time.perf_counter()
