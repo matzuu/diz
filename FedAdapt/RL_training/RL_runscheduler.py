@@ -9,6 +9,7 @@ import time
 import psutil
 
 def objective1():
+    
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nOBJECTIVE 1")
     episode_range = [1,2,3]
@@ -16,6 +17,7 @@ def objective1():
     ################
     config.max_timesteps = 5
     ##################
+    psutil.cpu_percent()
     for e in episode_range:
         config.max_episodes = e
         for i in iteration_range:

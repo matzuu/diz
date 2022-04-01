@@ -41,6 +41,9 @@ def client_main():
 	rl_client = RL_Client(index, ip_address, config.SERVER_ADDR, config.SERVER_PORT, datalen, config.model_name, split_layer, config.model_cfg)
 
 	while True:
+		psutil.cpu_percent() #init since last "infer"; it will wait until next msg is received; Resource Calculation is done after the infer state
+		start_time = time.perf_counter()  #can be either step, or episode_init time
+
 		command = rl_client.recv_msg(rl_client.sock, 'NEXT_COMMAND')[1]
 		if command == 'RESET':
 			rl_client.initialize(len(config.model_cfg[config.model_name])-1) #initialize with llen of model -1 <==> 7 - 1 = 6; NO offloading
@@ -51,14 +54,8 @@ def client_main():
 		elif command == 'RUN_FINISHED':
 			time_client_finish = time.perf_counter()
 			time_client_total = time_client_finish - time_client_start
-			###GATHER METRICS
 			logger.info('## FINISHING_RUN: gathering metrics...')
-			cpu_usage_percent = psutil.cpu_percent()
-			ram_usage = psutil.virtual_memory()
-			disk_usage = psutil.disk_usage('/')
-			cpu_RW,ram_RW,disk_RW = rl_client.calculate_resource_wastage_client(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
-			### send message:
-			rl_client.send_msg_run_finished_client(cpu_RW,ram_RW,disk_RW)
+			rl_client.send_msg_run_finished_client(time_client_total)
 			return
 		
 
@@ -66,10 +63,15 @@ def client_main():
 		if first:
 			rl_client.infer(trainloader)
 			rl_client.infer(trainloader)
+			
 			first = False
 		else:
 			rl_client.infer(trainloader)
 
+		finish_time = time.perf_counter()  #can be either step, or episode_init time
+		round_time = finish_time - start_time
+		rl_client.send_RW_metrics(round_time) #Send the RW metrics
+		
 if __name__ == "__main__":
 	client_main()
 		

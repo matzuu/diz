@@ -1,3 +1,5 @@
+import psutil
+
 from http import client
 import torch
 import torch.nn as nn
@@ -13,6 +15,7 @@ import numpy as np
 import threading
 import json
 import operator
+
 
 import sys
 sys.path.append('../FedAdapt')
@@ -38,6 +41,7 @@ class Env(Communicator):
 		self.group_labels = []
 		self.model_flops_list = self.get_model_flops_list(model_cfg, model_name)
 		assert len(self.model_flops_list) == config.model_len
+		self.client_total_time = {}
 
 		# Server configration
 		self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -46,6 +50,7 @@ class Env(Communicator):
 		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TO reuse the address
 		self.sock.bind((self.ip, self.port))
 		self.client_socks = {}
+		
 
 		while len(self.client_socks) < config.K:
 			self.sock.listen(5)
@@ -57,12 +62,16 @@ class Env(Communicator):
 
 		self.uninet = utils.get_model('Unit', self.model_name, 0, self.device, self.model_cfg)
 
+
 	def reset(self, done, first):
 		split_layers = [config.model_len-1 for i in range(config.K)] # Reset with no offloading
 		config.split_layer = split_layers
 		thread_number = config.K
 		client_ips = config.CLIENTS_LIST
 		self.tolerance_counts = config.tolerance_counts
+		self.ep_cpu_wastage_overhead = dict(zip(client_ips,[0] * len(client_ips))) #initialize dict with client_ip keys and 0 values
+		self.ep_ram_wastage_overhead  = dict(zip(client_ips, [0] * len(client_ips)))
+		self.ep_disk_wastage_overhead  = dict(zip(client_ips, [0] * len(client_ips)))
 		self.initialize(split_layers)
 		msg = ['NEXT_COMMAND', 'RESET']
 		self.scatter(msg)
@@ -81,6 +90,8 @@ class Env(Communicator):
 		else:
 			self.infer(thread_number, client_ips)
 
+	
+
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)
 		self.baseline = self.infer_state # Set baseline for normalization
 		if len(self.group_labels) == 0:
@@ -91,6 +102,8 @@ class Env(Communicator):
 		# Concat and norm env state
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
+
+		self.receive_RW_from_clients("reset")
 		return np.array(state)
 
 	def group(self, baseline, network):
@@ -162,7 +175,7 @@ class Env(Communicator):
 		logger.info('## Infering on the server inside the step function')
 		##
 		
-		self.infer(thread_number, client_ips)
+		self.infer(thread_number, client_ips,"step")
 		self.time_finish_client_processing = time.perf_counter()
 
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)
@@ -170,6 +183,8 @@ class Env(Communicator):
 		logger.info('Training time per iteration: '+ json.dumps(self.infer_state))
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
+
+		self.receive_RW_from_clients("step")
 
 		return np.array(state), reward, maxtime, done
 
@@ -179,9 +194,9 @@ class Env(Communicator):
 		self.optimizers = {}
 		self.step_client_offloading_idle_time = {}
 		self.step_client_interstep_idle_time = 0.0 #Will be modified if it's not the first step and Val will be modified;
-		self.cpu_wastage = {}
-		self.ram_wastage = {}
-		self.disk_wastage= {}
+		self.cpu_wastage_step = {}
+		self.ram_wastage_step = {}
+		self.disk_wastage_step= {}
 
 		for i in range(len(split_layers)):
 			client_ip = config.CLIENTS_LIST[i]
@@ -375,9 +390,7 @@ class Env(Communicator):
 
 		for s in self.client_socks:
 			msg = self.recv_msg(self.client_socks[s], 'RUN_FINISHED_METRICS')
-			self.cpu_wastage[msg[1]] = msg[2]
-			self.ram_wastage[msg[1]] = msg[3]  #msg[1] = 'ip.addres'
-			self.disk_wastage[msg[1]] = msg[4]
+			self.client_total_time[msg[1]] = msg[2]
 
 		#Send close signal to other devices
 		return
@@ -388,12 +401,25 @@ class Env(Communicator):
 			self.client_socks[s].close()
 		return
 
-	def calculate_resource_wastage_server(self,time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
-		cpu_wastage,ram_wastage,disk_wastage = calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
-		self.cpu_wastage['server'] = cpu_wastage
-		self.ram_wastage['server'] = ram_wastage
-		self.disk_wastage['server'] = disk_wastage
-		return
+	def calculate_resource_wastage_server(self,time_total):
+		cpu_count,cpu_usage_percent,ram_usage,disk_usage = get_resource_utilisation()
+		cpu_wastage,ram_wastage,disk_wastage = calculate_resource_wastage(time_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
+		return cpu_wastage,ram_wastage,disk_wastage
+
+	def receive_RW_from_clients(self,context):
+		for s in self.client_socks:
+			msg = self.recv_msg(self.client_socks[s], 'RESOURCE_WASTAGE')
+			#msg = ['RESOURCE_WASTAGE', self.ip,cpu_RW,ram_RW,disk_RW ] #msg received
+
+			if context == 'reset': 
+				self.ep_cpu_wastage_overhead[msg[1]] += msg[2]
+				self.ep_ram_wastage_overhead[msg[1]] += msg[3]
+				self.ep_disk_wastage_overhead[msg[1]] += msg[4]
+			elif context == 'step':
+				self.cpu_wastage_step[msg[1]] = msg[2]
+				self.ram_wastage_step[msg[1]] = msg[3]
+				self.disk_wastage_step[msg[1]] = msg[4]
+
 
 		
 
@@ -482,20 +508,41 @@ class RL_Client(Communicator):
 
 		infer_speed = (e_time_infer - s_time_infer) / config.iteration[self.ip_address]
 		infer_total_time = e_time_infer - s_time_infer
+		
+
 		msg = ['MSG_INFER_SPEED', self.ip, infer_speed,infer_total_time, metrics_current_infer]
 		self.send_msg(self.sock, msg)
+
+		
 
 	def reinitialize(self, split_layers):
 		self.initialize(split_layers)
 
-	def send_msg_run_finished_client(self, cpu_RW, ram_RW, disk_RW):
-		msg = ['RUN_FINISHED_METRICS', self.ip, cpu_RW,ram_RW,disk_RW] 
+	def send_msg_run_finished_client(self, time_client_total):
+		msg = ['RUN_FINISHED_METRICS', self.ip, time_client_total] 
 		self.send_msg(self.sock, msg)
 		return
 
-	def calculate_resource_wastage_client(self,time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
+	def send_RW_metrics(self, time_client_total):
+		cpu_RW,ram_RW,disk_RW = self.calculate_resource_wastage_client(time_client_total)
+		msg = ['RESOURCE_WASTAGE', self.ip,cpu_RW,ram_RW,disk_RW ]
+		self.send_msg(self.sock, msg)
+		return
+
+	def calculate_resource_wastage_client(self,time_client_total):
+		cpu_count,cpu_usage_percent,ram_usage,disk_usage = get_resource_utilisation()
 		return calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage)
 
+
+
+def get_resource_utilisation():
+
+	cpu_usage_percent = psutil.cpu_percent() #returns percent of utilization since last call; if no other call returns 0.0 ==> must call this at least once before
+	cpu_count = psutil.cpu_count()
+	ram_usage = psutil.virtual_memory()
+	disk_usage = psutil.disk_usage('/')	
+
+	return cpu_usage_percent,cpu_count,ram_usage,disk_usage
 
 def calculate_resource_wastage(time_client_total,cpu_count,cpu_usage_percent,ram_usage,disk_usage):
 	#CPU resource wastage == %idle_time * nr_cpus * time(s)
