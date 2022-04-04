@@ -175,7 +175,7 @@ class Env(Communicator):
 		logger.info('## Infering on the server inside the step function')
 		##
 		
-		self.infer(thread_number, client_ips,"step")
+		self.infer(thread_number, client_ips)
 		self.time_finish_client_processing = time.perf_counter()
 
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)

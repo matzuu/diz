@@ -1192,11 +1192,11 @@ if __name__ == "__main__":
     metrics_file = "RL_Metrics_E1_I3"
     metrics_file2 = "RL_Metrics_E2_I5"
     metrics_file3 = "RL_Metrics_E3_I5"
-    with open("./results/"+metrics_file, 'rb') as f:
+    with open("./results/"+metrics_file+".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    with open("./results/"+metrics_file2, 'rb') as f:
+    with open("./results/"+metrics_file2+".pkl", 'rb') as f:
         RL_res2 = pickle.load(f)
-    with open("./results/"+metrics_file3, 'rb') as f:
+    with open("./results/"+metrics_file3+".pkl", 'rb') as f:
         RL_res3 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)

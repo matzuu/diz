@@ -39,12 +39,12 @@ def objective1():
                 ###TODO: Try with clients; check if server start/ipaddress assignation is a problem
 
             
-            print("CPU_PERCENT_RUN: "+ str(psutil.cpu_percent()))
+            #print("CPU_PERCENT_RUN: "+ str(psutil.cpu_percent()))
             time_server_finish = time.perf_counter()
             print("RUN TIME: "+ str(time_server_finish-time_server_start))
             print("Waiting 5s for address deallocation...")
             time.sleep(5) #waiting for de-allocation of server address
-            print("Finished iteration")
+            print("Finished run")
 
 def objective2():
     #Reward, etc??

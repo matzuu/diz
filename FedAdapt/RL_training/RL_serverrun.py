@@ -146,11 +146,13 @@ def server_main(run_identifier: str):
 
 		time_finish_episode = time.perf_counter()
 		episode_dict["episode_time_total"] = time_finish_episode - time_start_episode
+		episode_dict["cpu_wastage_overhead"] = env.ep_cpu_wastage_overhead #server + clients
+		episode_dict["ram_wastage_overhead"] = env.ep_ram_wastage_overhead #server + clients
+		episode_dict["disk_wastage_overhead"] = env.ep_disk_wastage_overhead #server + clients		
+		
 		metrics_dict["episode_" + str(i_episode)] = episode_dict
-		metrics_dict["RL_time_total"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
-		metrics_dict["cpu_wastage_overhead"] = env.ep_cpu_wastage_overhead #server + clients
-		metrics_dict["ram_wastage_overhead"] = env.ep_ram_wastage_overhead #server + clients
-		metrics_dict["disk_wastage_overhead"] = env.ep_disk_wastage_overhead #server + clients
+		metrics_dict["RL_time_total_server"] = time_finish_episode - time_server_start #Total Server time untill now, it will be overwritten after next episode
+		
 		#Save data at the end of each episode; Overwrite ( new written metrics dicts contains old episode data + the new episode)
 		#Overall Structure is metrics_dict -> episode_dict -> step_dict
 
