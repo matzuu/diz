@@ -27,7 +27,7 @@ def server_main(run_identifier: str):
 		logger.info('Random seed: {}'.format(config.random_seed))
 
 	# Creating environment
-	env = Env(0, config.SERVER_ADDR, config.SERVER_PORT, config.CLIENTS_LIST, config.model_name, config.model_cfg, config.rl_b)
+	env = Env(0, config.SERVER_ADDR, config.SERVER_PORT, config.CLIENTS_LIST, config.model_name, config.model_cfg, config.B)
 	device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 	# Creating PPO agent

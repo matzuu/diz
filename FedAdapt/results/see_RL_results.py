@@ -1193,10 +1193,10 @@ def simple_print_avg_objectives(RL_res1):
     step_counter = 0
     train_time_list = []
     resource_wastage_cpu_list = []
-    reousrce_wastage_ram_list = []
+    resource_wastage_ram_list = []
     reward_list = []
 
-    for episode_index in (range(1,len(RL_res1)-4)): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+    for episode_index in (range(1,len(RL_res1)-3)): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
         
         episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
         
@@ -1205,15 +1205,15 @@ def simple_print_avg_objectives(RL_res1):
             step_counter +=1
             train_time_list.append(step["server_step_time_total"])
             resource_wastage_cpu_list.append(step['cpu_wastage'])
-            reousrce_wastage_ram_list.append(step['ram_wastage'])
+            resource_wastage_ram_list.append(step['ram_wastage'])
             reward_list.append(step['rewards'])
 
 
     print("###########")
     print("AVG TRAIN TIME: "+ str( (sum(train_time_list)/len(train_time_list) )))
-    print("AVG CPU WASTAGE: "+ str( (sum(resource_wastage_cpu_list)/len(resource_wastage_cpu_list)) ))
-    print("AVG RAM WASTAGE: "+str(sum(reousrce_wastage_ram_list)/len(reousrce_wastage_ram_list) ))
-    print("AVG REWARDS: "+str(sum(reward_list)/len(reward_list) ))
+    print("AVG CPU WASTAGE: "+ str( (sum([sum(item.values()) for item in resource_wastage_cpu_list])/len(resource_wastage_cpu_list)) ))
+    print("AVG RAM WASTAGE: "+str( (sum([sum(item.values()) for item in resource_wastage_ram_list])//len(resource_wastage_ram_list) )))
+    print("AVG REWARDS: "+str(sum(reward_list)/len(reward_list) )) ###REWARDS AS IMPROVEMENT OVERALL, RATHER THAN LAST STEP? ==> IMPROVEMENT CALCULATED AS 
     return
 
 if __name__ == "__main__":
@@ -1223,10 +1223,10 @@ if __name__ == "__main__":
     metrics_file3 = "RL_Metrics_E3_I5"
     with open("./results/"+metrics_file+".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    with open("./results/"+metrics_file2+".pkl", 'rb') as f:
-        RL_res2 = pickle.load(f)
-    with open("./results/"+metrics_file3+".pkl", 'rb') as f:
-        RL_res3 = pickle.load(f)
+    # with open("./results/"+metrics_file2+".pkl", 'rb') as f:
+    #     RL_res2 = pickle.load(f)
+    # with open("./results/"+metrics_file3+".pkl", 'rb') as f:
+    #     RL_res3 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)

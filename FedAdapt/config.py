@@ -44,7 +44,7 @@ model_len = 7
 # FL training configration
 R = 100 # FL rounds
 LR = 0.01 # Learning rate
-B = 100 # Batch size
+B = 50 # Batch size
 
 
 # RL training configration
@@ -60,7 +60,7 @@ max_update_epochs = 10     ##### Stop the steps training after X values.(results
 K_epochs = 50              # update policy for K epochs
 eps_clip = 0.2             # clip parameter for PPO
 rl_gamma = 0.9             # discount factor
-rl_b = 100				   # Batchsize ####not used? ### Test to see how it behaves when different from B
+#rl_b = 100				   # Batchsize ####not used? ### Test to see how it behaves when different from B
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
 iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device #server&client-side
