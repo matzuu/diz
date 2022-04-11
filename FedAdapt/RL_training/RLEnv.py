@@ -34,7 +34,7 @@ class Env(Communicator):
 		self.index = index
 		self.clients_list = clients_list
 		self.model_name = model_name
-		self.batchsize = batchsize
+		self.batchsize = batchsize #Not used?
 		self.model_cfg = model_cfg
 		self.state_dim = 2*config.G 
 		self.action_dim = config.G
