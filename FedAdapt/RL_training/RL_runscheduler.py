@@ -12,7 +12,7 @@ def objective1():
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nOBJECTIVE 1")
-    episode_range = [1,2,3]
+    episode_range = [1]
     iteration_range = [3,5]
     ################
     config.max_timesteps = 5

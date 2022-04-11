@@ -1188,7 +1188,36 @@ def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,c
     print("DONE_DISPLAY")
 
 
+def simple_print_avg_objectives(RL_res1):
+
+    step_counter = 0
+    train_time_list = []
+    resource_wastage_cpu_list = []
+    reousrce_wastage_ram_list = []
+    reward_list = []
+
+    for episode_index in (range(1,len(RL_res1)-4)): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+        
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        
+        for step_index in range(len(episode)-4): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            step_counter +=1
+            train_time_list.append(step["server_step_time_total"])
+            resource_wastage_cpu_list.append(step['cpu_wastage'])
+            reousrce_wastage_ram_list.append(step['ram_wastage'])
+            reward_list.append(step['rewards'])
+
+
+    print("###########")
+    print("AVG TRAIN TIME: "+ str( (sum(train_time_list)/len(train_time_list) )))
+    print("AVG CPU WASTAGE: "+ str( (sum(resource_wastage_cpu_list)/len(resource_wastage_cpu_list)) ))
+    print("AVG RAM WASTAGE: "+str(sum(reousrce_wastage_ram_list)/len(reousrce_wastage_ram_list) ))
+    print("AVG REWARDS: "+str(sum(reward_list)/len(reward_list) ))
+    return
+
 if __name__ == "__main__":
+
     metrics_file = "RL_Metrics_E1_I3"
     metrics_file2 = "RL_Metrics_E2_I5"
     metrics_file3 = "RL_Metrics_E3_I5"
@@ -1225,7 +1254,8 @@ if __name__ == "__main__":
     #display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
     ### Maybe also do it for idle time? ^
 
-
+    simple_print_avg_objectives(RL_res1)
+    
 
     #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices (can also do it for 5)
 

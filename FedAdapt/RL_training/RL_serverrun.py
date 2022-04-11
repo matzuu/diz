@@ -141,7 +141,7 @@ def server_main(run_identifier: str):
 				break
 
 			# stop when get control update epoch
-			if update_epoch > 10:
+			if update_epoch > config.max_update_epochs:
 				break
 
 		time_finish_episode = time.perf_counter()
