@@ -12,8 +12,8 @@ def objective1():
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nOBJECTIVE 1")
-    episode_range = [3]#[1,5,10,25,50] # 5
-    iteration_range = [5] #[1,3,5,10,20] # 5
+    episode_range = [1,50]#[1,5,10,25,50] # 5
+    iteration_range = [5,20] #[1,3,5,10,20] # 5
     batch_size = [10,200] #[1,10,50,100,200] #5
     data_lenght = [50000,5000] # [50000,25000,15000,5000, 2500] #5
     

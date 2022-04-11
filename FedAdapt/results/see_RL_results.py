@@ -1218,15 +1218,18 @@ def simple_print_avg_objectives(RL_res1):
 
 if __name__ == "__main__":
 
-    metrics_file = "RL_Metrics_E1_I5_B50_D50000"
-    metrics_file2 = "RL_Metrics_E2_I5"
-    metrics_file3 = "RL_Metrics_E3_I5"
+    metrics_file = "RL_Metrics_E3_I5_B10_D5000"
+    metrics_file2 = "RL_Metrics_E3_I5_B10_D50000"
+    metrics_file3 = "RL_Metrics_E3_I5_B200_D5000"
+    metrics_file4 = "RL_Metrics_E3_I5_B200_D50000"
     with open("./results/"+metrics_file+".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
-    # with open("./results/"+metrics_file2+".pkl", 'rb') as f:
-    #     RL_res2 = pickle.load(f)
-    # with open("./results/"+metrics_file3+".pkl", 'rb') as f:
-    #     RL_res3 = pickle.load(f)
+    with open("./results/"+metrics_file2+".pkl", 'rb') as f:
+        RL_res2 = pickle.load(f)
+    with open("./results/"+metrics_file3+".pkl", 'rb') as f:
+        RL_res3 = pickle.load(f)
+    with open("./results/"+metrics_file4+".pkl", 'rb') as f:
+        RL_res4 = pickle.load(f)
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
@@ -1255,6 +1258,9 @@ if __name__ == "__main__":
     ### Maybe also do it for idle time? ^
 
     simple_print_avg_objectives(RL_res1)
+    simple_print_avg_objectives(RL_res2)
+    simple_print_avg_objectives(RL_res3)
+    simple_print_avg_objectives(RL_res4)
     
 
     #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices (can also do it for 5)
