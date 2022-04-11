@@ -1218,7 +1218,7 @@ def simple_print_avg_objectives(RL_res1):
 
 if __name__ == "__main__":
 
-    metrics_file = "RL_Metrics_E1_I3"
+    metrics_file = "RL_Metrics_E1_I5_B50_D50000"
     metrics_file2 = "RL_Metrics_E2_I5"
     metrics_file3 = "RL_Metrics_E3_I5"
     with open("./results/"+metrics_file+".pkl", 'rb') as f:
