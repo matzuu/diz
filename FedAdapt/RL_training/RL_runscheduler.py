@@ -44,8 +44,11 @@ def objective1():
                                     print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################")   
                                     #######################             
                                     run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
-                                    
-                                    os.remove("PPO.pth") ##Remove old trained model, so it creates a new one, without being influenced by previous trains
+                                    try:
+                                        os.remove("PPO.pth") ##Remove old trained model, so it creates a new one, without being influenced by previous trains
+                                    except Exception as e:
+                                        continue #already removed
+
                                     ####################
                                     start_run(run_identifier)
                                     
