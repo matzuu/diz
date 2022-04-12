@@ -46,8 +46,8 @@ def objective1():
                                     run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
                                     try:
                                         os.remove("PPO.pth") ##Remove old trained model, so it creates a new one, without being influenced by previous trains
-                                    except Exception as e:
-                                        continue #already removed
+                                    except Exception as exception_file_already_removed:
+                                        pass #file already removed
 
                                     ####################
                                     start_run(run_identifier)
