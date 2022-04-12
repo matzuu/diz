@@ -1188,7 +1188,7 @@ def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,c
     print("DONE_DISPLAY")
 
 
-def simple_print_avg_objectives(RL_res1):
+def simple_print_avg_objectives(RL_res1,printing_info):
 
     step_counter = 0
     train_time_list = []
@@ -1209,20 +1209,62 @@ def simple_print_avg_objectives(RL_res1):
             reward_list.append(step['rewards'])
 
 
-    print("###########")
+    print("########### "+ printing_info)
     print("AVG TRAIN TIME: "+ str( (sum(train_time_list)/len(train_time_list) )))
     print("AVG CPU WASTAGE: "+ str( (sum([sum(item.values()) for item in resource_wastage_cpu_list])/len(resource_wastage_cpu_list)) ))
     print("AVG RAM WASTAGE: "+str( (sum([sum(item.values()) for item in resource_wastage_ram_list])//len(resource_wastage_ram_list) )))
     print("AVG REWARDS: "+str(sum(reward_list)/len(reward_list) )) ###REWARDS AS IMPROVEMENT OVERALL, RATHER THAN LAST STEP? ==> IMPROVEMENT CALCULATED AS 
     return
 
+def simple_print_avg_objectives_ALL_RUNS():
+    #Make it the same as the RL_runscheduler.py
+    episode_range = [1,50]#[1,5,10,25,50] # 5
+    iteration_range = [5,20] #[1,3,5,10,20] # 5
+    batch_size = [100] #[1,10,50,100,200] #5
+    data_lenght = [50000]# [50000,25000,15000,5000, 2500] #5
+    learning_rate = [0.005,0.03]
+    max_update_epochs = [5,50]
+    tolerance = [0,2]
+
+    for e in episode_range:
+        config.max_episodes = e
+        for i in iteration_range:
+            new_iter_dict = {x: i for x in config.iteration} #Changes all the values in dict to the integer i
+            config.iteration = new_iter_dict
+            for b in batch_size:
+                config.B = b
+                for d in data_lenght:
+                    for l in learning_rate:
+                        config.LR = l
+                        for m in max_update_epochs:
+                            config.max_update_epochs = m
+                            for t in tolerance:
+                                config.tolerance_counts = t
+
+                                try:
+                                    print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################") 
+                                    run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
+                                    metrics_file = "RL_Metrics_" +str(run_identifier)
+        
+                                    with open("./results/"+metrics_file+".pkl", 'rb') as f:
+                                        RL_res1 = pickle.load(f)
+
+                                    simple_print_avg_objectives(RL_res1,"")
+                                    
+
+                                except Exception as exception:
+                                    print("EXCEPTION OCCURED DURING PRINT: E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t))
+                                    print(exception)
+
+    return
+
 if __name__ == "__main__":
 
-    metrics_file = "RL_Metrics_E3_I5_B10_D5000"
-    metrics_file2 = "RL_Metrics_E3_I5_B10_D50000"
-    metrics_file3 = "RL_Metrics_E3_I5_B200_D5000"
-    metrics_file4 = "RL_Metrics_E3_I5_B200_D50000"
-    with open("./results/"+metrics_file+".pkl", 'rb') as f:
+    metrics_file1 = "RL_Metrics_E1_I5_B10_D5000"
+    metrics_file2 = "RL_Metrics_E1_I5_B10_D50000"
+    metrics_file3 = "RL_Metrics_E1_I5_B200_D5000"
+    metrics_file4 = "RL_Metrics_E1_I5_B200_D50000"
+    with open("./results/"+metrics_file1+".pkl", 'rb') as f:
         RL_res1 = pickle.load(f)
     with open("./results/"+metrics_file2+".pkl", 'rb') as f:
         RL_res2 = pickle.load(f)
@@ -1230,6 +1272,8 @@ if __name__ == "__main__":
         RL_res3 = pickle.load(f)
     with open("./results/"+metrics_file4+".pkl", 'rb') as f:
         RL_res4 = pickle.load(f)
+
+    
     # display_split_layer_by_episode(RL_res1)
     # display_steps_and_relativeTime_per_episode(RL_res1)
     # display_eachStep_rew_maxIterTime_stepTime(RL_res1)
@@ -1257,19 +1301,10 @@ if __name__ == "__main__":
     #display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
     ### Maybe also do it for idle time? ^
 
-    simple_print_avg_objectives(RL_res1)
-    simple_print_avg_objectives(RL_res2)
-    simple_print_avg_objectives(RL_res3)
-    simple_print_avg_objectives(RL_res4)
+    simple_print_avg_objectives(RL_res1,metrics_file1[11:])
+    simple_print_avg_objectives(RL_res2,metrics_file2[11:])
+    simple_print_avg_objectives(RL_res3,metrics_file3[11:])
+    simple_print_avg_objectives(RL_res4,metrics_file4[11:])
     
-
-    #TODO surprise vs reward in regards to split layer #try to do it for just 2 devices (can also do it for 5)
-
-    #TODO FIRST, Increase hyperparameter for update_epoch, check results
-
-    #Step time vs vs rewards?
-
-    #add tollerance count in each step METRICS
-
     #LOookg at tollerance values vs rewards
     print("FINIIIIIISH")

@@ -65,7 +65,7 @@ rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
 iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device #server&client-side
 
-tolerance_counts = 2 #Number of allowances for exceeding max baseline in the reward function; Default 0
+tolerance_counts = 0 #Number of allowances for exceeding max baseline in the reward function; Default 0
 tolerance_percent = 1.0 #Tolerance in regards to the percentage of baseline(maximum threshold)the current max_iteration_time is allowed to go over;  Default 1
 						#I.E: max_itertime < tolerance_percent * baseline;
 
