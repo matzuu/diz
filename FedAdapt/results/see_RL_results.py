@@ -1188,7 +1188,7 @@ def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,c
     print("DONE_DISPLAY")
 
 
-def simple_print_avg_objectives(RL_res1,printing_info):
+def simple_print_avg_objectives(RL_res1,run_identifier):
 
     step_counter = 0
     train_time_list = []
@@ -1209,28 +1209,31 @@ def simple_print_avg_objectives(RL_res1,printing_info):
             reward_list.append(step['rewards'])
 
 
-    print("########### "+ printing_info)
-    print("AVG TRAIN TIME: "+ str( (sum(train_time_list)/len(train_time_list) )))
-    print("AVG CPU WASTAGE: "+ str( (sum([sum(item.values()) for item in resource_wastage_cpu_list])/len(resource_wastage_cpu_list)) ))
-    print("AVG RAM WASTAGE: "+str( (sum([sum(item.values()) for item in resource_wastage_ram_list])//len(resource_wastage_ram_list) )))
-    print("AVG REWARDS: "+str(sum(reward_list)/len(reward_list) )) ###REWARDS AS IMPROVEMENT OVERALL, RATHER THAN LAST STEP? ==> IMPROVEMENT CALCULATED AS 
+    #print("##################################################################### "+ run_identifier)
+    total_run_time = format(RL_res1["RL_time_total_server"], '.3f')
+    avg_train_time = format((sum(train_time_list)/len(train_time_list)), '.3f')
+    avg_cpu_wastage = format((sum([sum(item.values()) for item in resource_wastage_cpu_list])/len(resource_wastage_cpu_list)), '.3f')
+    avg_ram_wastage = format((sum([sum(item.values()) for item in resource_wastage_ram_list])//len(resource_wastage_ram_list) ), '.3f')
+    avg_rewards = format((sum(reward_list)/len(reward_list) ), '.3f') ###REWARDS AS IMPROVEMENT OVERALL, RATHER THAN LAST STEP? ==> IMPROVEMENT CALCULATED AS 
+    print("AVG:  "+ total_run_time+ "\t"+avg_train_time+ "\t\t" + avg_cpu_wastage + "\t\t" +avg_ram_wastage + "\t\t" +avg_rewards +"\t\t### "+ run_identifier)
     return
 
 def simple_print_avg_objectives_ALL_RUNS():
     #Make it the same as the RL_runscheduler.py
     episode_range = [1,50]#[1,5,10,25,50] # 5
-    iteration_range = [5,20] #[1,3,5,10,20] # 5
-    batch_size = [100] #[1,10,50,100,200] #5
-    data_lenght = [50000]# [50000,25000,15000,5000, 2500] #5
+    iteration_range = [5,50] #[1,3,5,10,20] # 5
+    batch_size = [10,200] #[1,10,50,100,200] #5
+    data_lenght = [5000,50000]# [50000,25000,15000,5000, 2500] #5
     learning_rate = [0.005,0.03]
     max_update_epochs = [5,50]
     tolerance = [0,2]
-
+    
     for e in episode_range:
         config.max_episodes = e
         for i in iteration_range:
             new_iter_dict = {x: i for x in config.iteration} #Changes all the values in dict to the integer i
             config.iteration = new_iter_dict
+            print("AVG:  TOTAL_T \t STEP_T \t\t CPU_W \t\t RAM_W \t\t REWARDS \t\t ### RUN IDENTIFIER")
             for b in batch_size:
                 config.B = b
                 for d in data_lenght:
@@ -1242,14 +1245,15 @@ def simple_print_avg_objectives_ALL_RUNS():
                                 config.tolerance_counts = t
 
                                 try:
-                                    print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################") 
                                     run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
+                                    #print("#############################################\nRUN METRICS: " + run_identifier) 
+                                    
                                     metrics_file = "RL_Metrics_" +str(run_identifier)
         
                                     with open("./results/"+metrics_file+".pkl", 'rb') as f:
                                         RL_res1 = pickle.load(f)
 
-                                    simple_print_avg_objectives(RL_res1,"")
+                                    simple_print_avg_objectives(RL_res1,run_identifier)
                                     
 
                                 except Exception as exception:
@@ -1300,7 +1304,7 @@ if __name__ == "__main__":
 
     #display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
     ### Maybe also do it for idle time? ^
-
+    print("AVG:  TOTAL_T \tSTEP_T \t\tCPU_W \t\tRAM_W \t\tREWARDS \t### RUN IDENTIFIER")
     simple_print_avg_objectives(RL_res1,metrics_file1[11:])
     simple_print_avg_objectives(RL_res2,metrics_file2[11:])
     simple_print_avg_objectives(RL_res3,metrics_file3[11:])
