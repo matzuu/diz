@@ -13,13 +13,14 @@ def objective1():
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nOBJECTIVE 1")
-    episode_range = [1,50]#[1,5,10,25,50] # 5
+    episode_range = [50,1]#[1,5,10,25,50] # 5
     iteration_range = [5,50] #[1,3,5,10,20] # 5
     batch_size = [10,200] #[1,10,50,100,200] #5
     data_lenght = [5000,50000]# [50000,25000,15000,5000, 2500] #5
     learning_rate = [0.005,0.03]
     max_update_epochs = [5,50]
     tolerance = [0,2]
+    ## 2 ^ 7 = 128 runs
     
     ################
     ##################
@@ -32,6 +33,7 @@ def objective1():
             for b in batch_size:
                 config.B = b
                 for d in data_lenght:
+                    config.N = d
                     for l in learning_rate:
                         config.LR = l
                         for m in max_update_epochs:
@@ -45,7 +47,7 @@ def objective1():
                                     #######################             
                                     run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
                                     try:
-                                        os.remove("PPO.pth") ##Remove old trained model, so it creates a new one, without being influenced by previous trains
+                                        os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
                                     except Exception as exception_file_already_removed:
                                         pass #file already removed
 

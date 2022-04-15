@@ -1215,10 +1215,10 @@ def simple_print_avg_objectives(RL_res1,run_identifier):
     avg_cpu_wastage = format((sum([sum(item.values()) for item in resource_wastage_cpu_list])/len(resource_wastage_cpu_list)), '.3f')
     avg_ram_wastage = format((sum([sum(item.values()) for item in resource_wastage_ram_list])//len(resource_wastage_ram_list) ), '.3f')
     avg_rewards = format((sum(reward_list)/len(reward_list) ), '.3f') ###REWARDS AS IMPROVEMENT OVERALL, RATHER THAN LAST STEP? ==> IMPROVEMENT CALCULATED AS 
-    print("AVG:  "+ total_run_time+ "\t"+avg_train_time+ "\t\t" + avg_cpu_wastage + "\t\t" +avg_ram_wastage + "\t\t" +avg_rewards +"\t\t### "+ run_identifier)
+    print("   :  "+ total_run_time+ "\t"+avg_train_time+ "\t\t" + avg_cpu_wastage + "\t\t" +avg_ram_wastage + "\t\t" +avg_rewards +"\t\t### "+ run_identifier)
     return
 
-def simple_print_avg_objectives_ALL_RUNS():
+def iterate_and_process_ALL_RUNS():
     #Make it the same as the RL_runscheduler.py
     episode_range = [1,50]#[1,5,10,25,50] # 5
     iteration_range = [5,50] #[1,3,5,10,20] # 5
@@ -1233,7 +1233,7 @@ def simple_print_avg_objectives_ALL_RUNS():
         for i in iteration_range:
             new_iter_dict = {x: i for x in config.iteration} #Changes all the values in dict to the integer i
             config.iteration = new_iter_dict
-            print("AVG:  TOTAL_T \t STEP_T \t\t CPU_W \t\t RAM_W \t\t REWARDS \t\t ### RUN IDENTIFIER")
+            print("AVG:  TOTAL_T \t STEP_T \t CPU_W \t\t RAM_W \t\t REWARDS \t### RUN IDENTIFIER")
             for b in batch_size:
                 config.B = b
                 for d in data_lenght:
@@ -1262,20 +1262,48 @@ def simple_print_avg_objectives_ALL_RUNS():
 
     return
 
+
+def get_step_objectives_from_run(RL_res1,run_identifier):
+
+    step_counter = 0
+    step_time_list = []
+    cpu_wastage_list = []
+    ram_wastage_list = []
+    rewards_list = []
+    split_layer_list = []
+
+    for episode_index in (range(1,len(RL_res1)-3)): #index from 1 to 100; (Len of RL_res1 is 101, but contains 100 episodes + 1 time_value) (episodes start at 1)
+        
+        episode = RL_res1["episode_"+str(episode_index)] #Get Episode value
+        
+        for step_index in range(len(episode)-4): # (steps start at 0) (1 value in dict is the total episode time; so -1 at len)
+            step = episode["step_"+str(step_index)]
+            step_counter +=1
+            step_time_list.append(step["server_step_time_total"])
+            resource_wastage = step['cpu_wastage'] + step['ram_wastage']
+            cpu_wastage_list.append(step['cpu_wastage'])
+            ram_wastage_list.append(step['ram_wastage'])
+            rewards_list.append(step['rewards'])
+            split_layer_list.append(step['split_layer'])
+
+    #print("##################################################################### "+ run_identifier)
+
+    return (step_time_list, cpu_wastage_list, ram_wastage_list, rewards_list,split_layer_list)
+
 if __name__ == "__main__":
 
-    metrics_file1 = "RL_Metrics_E1_I5_B10_D5000"
-    metrics_file2 = "RL_Metrics_E1_I5_B10_D50000"
-    metrics_file3 = "RL_Metrics_E1_I5_B200_D5000"
-    metrics_file4 = "RL_Metrics_E1_I5_B200_D50000"
-    with open("./results/"+metrics_file1+".pkl", 'rb') as f:
-        RL_res1 = pickle.load(f)
-    with open("./results/"+metrics_file2+".pkl", 'rb') as f:
-        RL_res2 = pickle.load(f)
-    with open("./results/"+metrics_file3+".pkl", 'rb') as f:
-        RL_res3 = pickle.load(f)
-    with open("./results/"+metrics_file4+".pkl", 'rb') as f:
-        RL_res4 = pickle.load(f)
+    # metrics_file1 = "RL_Metrics_E1_I5_B10_D5000"
+    # metrics_file2 = "RL_Metrics_E1_I5_B10_D50000"
+    # metrics_file3 = "RL_Metrics_E1_I5_B200_D5000"
+    # metrics_file4 = "RL_Metrics_E1_I5_B200_D50000"
+    # with open("./results/"+metrics_file1+".pkl", 'rb') as f:
+    #     RL_res1 = pickle.load(f)
+    # with open("./results/"+metrics_file2+".pkl", 'rb') as f:
+    #     RL_res2 = pickle.load(f)
+    # with open("./results/"+metrics_file3+".pkl", 'rb') as f:
+    #     RL_res3 = pickle.load(f)
+    # with open("./results/"+metrics_file4+".pkl", 'rb') as f:
+    #     RL_res4 = pickle.load(f)
 
     
     # display_split_layer_by_episode(RL_res1)
@@ -1304,11 +1332,13 @@ if __name__ == "__main__":
 
     #display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,0)
     ### Maybe also do it for idle time? ^
-    print("AVG:  TOTAL_T \tSTEP_T \t\tCPU_W \t\tRAM_W \t\tREWARDS \t### RUN IDENTIFIER")
-    simple_print_avg_objectives(RL_res1,metrics_file1[11:])
-    simple_print_avg_objectives(RL_res2,metrics_file2[11:])
-    simple_print_avg_objectives(RL_res3,metrics_file3[11:])
-    simple_print_avg_objectives(RL_res4,metrics_file4[11:])
+    # print("AVG:  TOTAL_T \tSTEP_T \t\tCPU_W \t\tRAM_W \t\tREWARDS \t### RUN IDENTIFIER")
+    # simple_print_avg_objectives(RL_res1,metrics_file1[11:])
+    # simple_print_avg_objectives(RL_res2,metrics_file2[11:])
+    # simple_print_avg_objectives(RL_res3,metrics_file3[11:])
+    # simple_print_avg_objectives(RL_res4,metrics_file4[11:])
     
-    #LOookg at tollerance values vs rewards
+    iterate_and_process_ALL_RUNS()
+    
+    #Variables to consider Episodes nr, iteration number, batch_size, Datalenght_size, 
     print("FINIIIIIISH")

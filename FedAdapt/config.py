@@ -56,11 +56,11 @@ n_latent_var = 64          # number of variables in hidden layer
 action_std = 0.5           # constant std for action distribution (Multivariate Normal)
 update_timestep = 10       # update policy every n timesteps 	   
 max_update_epochs = 10     ##### Stop the steps training after X values.(results in episodes with 1 step) Not sure exactly the reason for implementation.
-						   ##### controls when to stop multiples steps in an episode. nr of steps before stopping: update_timestep * control_update_epoch
+						   ##### controls when to stop multiples steps in an episode. nr of steps before stopping: update_timestep * max_update_epoch
 K_epochs = 50              # update policy for K epochs
 eps_clip = 0.2             # clip parameter for PPO
 rl_gamma = 0.9             # discount factor
-#rl_b = 100				   # Batchsize ####not used? ### Test to see how it behaves when different from B
+#rl_b = 100				   # Batchsize ####NOT Used?
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
 iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device #server&client-side
