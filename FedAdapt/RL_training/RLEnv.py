@@ -172,7 +172,7 @@ class Env(Communicator):
 
 		# Offloading training and return env state
 		##
-		logger.info('## Infering on the server inside the step function')
+		##logger.info('## Infering on the server inside the step function')
 		##
 		
 		self.infer(thread_number, client_ips)
@@ -180,7 +180,7 @@ class Env(Communicator):
 
 		self.offloading_state = self.get_offloading_state(split_layers, self.clients_list, self.model_cfg, self.model_name)
 		reward, maxtime, done = self.calculate_reward(self.infer_state)
-		logger.info('Training time per iteration: '+ json.dumps(self.infer_state))
+		##logger.info('Training time per iteration: '+ json.dumps(self.infer_state))
 		state = self.concat_norm(self.clients_list ,self.network_state, self.infer_state, self.offloading_state)
 		assert self.state_dim == len(state)
 

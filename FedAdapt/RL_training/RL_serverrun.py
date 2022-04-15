@@ -76,8 +76,7 @@ def server_main(run_identifier: str):
 			time_step +=1
 			action, action_mean, std = ppo.select_action(state, memory)
 			state, reward, maxtime, done = env.step(action, done)
-			logger.info('Current reward: ' + str(reward))
-			logger.info('Current maxtime: ' + str(maxtime))
+			logger.info('Current reward: ' + str(reward) + " | Current maxtime: " + str(maxtime))
 
 			# Saving reward and is_terminals:
 			memory.rewards.append(reward)

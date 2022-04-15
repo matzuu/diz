@@ -57,11 +57,11 @@ class ActorCritic(nn.Module):
     def act(self, state, memory):
         action_mean = self.actor(state)
         cov_mat = torch.diag(self.action_var).to(device)
-        logger.info(' Current action mean: ' + str(action_mean))
+        #logger.info(' Current action mean: ' + str(action_mean))
         
         dist = MultivariateNormal(action_mean, cov_mat)
         action = dist.sample()
-        logger.info('Current action sample: ' + str(action))
+        #logger.info('Current action sample: ' + str(action))
         action_logprob = dist.log_prob(action)
         
         memory.states.append(state)

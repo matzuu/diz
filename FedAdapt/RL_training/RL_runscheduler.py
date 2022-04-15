@@ -18,8 +18,8 @@ def objective1():
     batch_size = [10,200] #[1,10,50,100,200] #5
     data_lenght = [5000,50000]# [50000,25000,15000,5000, 2500] #5
     learning_rate = [0.005,0.03]
-    max_update_epochs = [5,50]
-    tolerance = [0,2]
+    max_update_epochs = [5,50] #controls max steps
+    tolerance = [0,2] #controls min steps
     ## 2 ^ 7 = 128 runs
     
     ################
