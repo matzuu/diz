@@ -9,19 +9,19 @@ import time
 import psutil
 import os
 
-def objective1():
+def scope1():
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
-    print("########################## \nOBJECTIVE 1")
-    episode_range = [50,1]#[1,5,10,25,50] # 5
-    iteration_range = [5,50] #[1,3,5,10,20] # 5
-    batch_size = [10,200] #[1,10,50,100,200] #5
-    data_lenght = [5000,50000]# [50000,25000,15000,5000, 2500] #5
-    learning_rate = [0.005,0.03]
-    max_update_epochs = [5,50] #controls max steps
-    tolerance = [0,2] #controls min steps
-    ## 2 ^ 7 = 128 runs
-    
+    print("########################## \nStarted run scheduler. The runs will take a while...")
+    episode_range = [1,10]#,50,100] #[1,10,50,100] # 4
+    iteration_range = [5,20,50,100] #[5,20,50,100] # 4
+    batch_size_range = [10,50,100,200] #[10,50,100,200] #4
+    data_lenght_range = [5000,10000,25000,50000]# [5000,10000,25000,50000] #4
+    learning_rate_range = [0.005,0.01,0.03] # 3
+    max_update_epochs_range = [5,10,50]  # 3
+    tolerance_range = [0,1,2] # 3
+    print("Total number of expected benchmark runs: " + str(len(episode_range)*len(iteration_range)*len(batch_size_range)*len(data_lenght_range)*len(learning_rate_range)*len(max_update_epochs_range)*len(tolerance_range)))
+    time.sleep(2)
     ################
     ##################
     psutil.cpu_percent()
@@ -30,15 +30,15 @@ def objective1():
         for i in iteration_range:
             new_iter_dict = {x: i for x in config.iteration} #Changes all the values in dict to the integer i
             config.iteration = new_iter_dict
-            for b in batch_size:
+            for b in batch_size_range:
                 config.B = b
-                for d in data_lenght:
+                for d in data_lenght_range:
                     config.N = d
-                    for l in learning_rate:
+                    for l in learning_rate_range:
                         config.LR = l
-                        for m in max_update_epochs:
+                        for m in max_update_epochs_range:
                             config.max_update_epochs = m
-                            for t in tolerance:
+                            for t in tolerance_range:
                                 config.tolerance_counts = t
 
                                 try:
@@ -62,14 +62,16 @@ def objective1():
                                 
                                 #print("CPU_PERCENT_RUN: "+ str(psutil.cpu_percent()))
                                 time_server_finish = time.perf_counter()
+                                print("FINISHED RUN: " + run_identifier)
                                 print("RUN TIME: "+ str(time_server_finish-time_server_start))
                                 print("Waiting 5s for address deallocation...")
                                 time.sleep(5) #waiting for de-allocation of server address
-                                print("Finished run")
+                                
 
-def objective2():
+def scope2():
     #Reward, etc??
-    print("OBJECTIVE 2")
+    #do somethio
+    return
 
 def start_run(run_identifier):
     device_type = sys.argv[1]
@@ -80,7 +82,7 @@ def start_run(run_identifier):
 
 
 if __name__ == "__main__": 
-    objective1()
+    scope1()
     #objective2()
     
 
