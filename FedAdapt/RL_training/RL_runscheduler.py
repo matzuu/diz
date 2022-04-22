@@ -10,6 +10,8 @@ import psutil
 import os
 
 def scope1():
+
+    device_type = sys.argv[1]
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nStarted run scheduler. The runs will take a while...")
@@ -55,7 +57,7 @@ def scope1():
                                             pass #file already removed
 
                                         ####################
-                                        start_run(run_identifier)
+                                        start_run(run_identifier,device_type)
                                         
                                     except Exception as exception:
                                         print("EXCEPTION OCCURED DURING RUN: E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t))
@@ -67,8 +69,12 @@ def scope1():
                                     time_server_finish = time.perf_counter()
                                     print("FINISHED RUN: " + run_identifier)
                                     print("RUN TIME: "+ str(time_server_finish-time_server_start))
-                                    print("Waiting 5s for address deallocation...")
-                                    time.sleep(5) #waiting for de-allocation of server address
+                                    if device_type == "server":
+                                        print("Waiting 5s for address deallocation...")
+                                        time.sleep(5) #waiting for de-allocation of server address
+                                    elif device_type == "client":
+                                        print("Waiting 8s for address deallocation...")
+                                        time.sleep(8) #waiting for de-allocation of server address
                                 
 
 def scope2():
@@ -76,8 +82,8 @@ def scope2():
     #do somethio
     return
 
-def start_run(run_identifier):
-    device_type = sys.argv[1]
+def start_run(run_identifier,device_type):
+    
     if device_type == "server":
         server_main(run_identifier)
     if device_type == "client":
