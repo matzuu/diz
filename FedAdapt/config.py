@@ -63,6 +63,7 @@ rl_gamma = 0.9             # discount factor
 #rl_b = 100				   # Batchsize ####NOT Used?
 rl_lr = 0.0003             # parameters for Adam optimizer
 rl_betas = (0.9, 0.999)
+#MAX ITERATION NUMBER = DATASET_SIZE (N) / ( NUMBER OF DEVICES (K) * BATCH_SIZE (B) ) i.e 5000 / (5 * 100) = 10
 iteration = {CLIENTS_LIST[0]: 5, CLIENTS_LIST[1]: 5 , CLIENTS_LIST[2]: 5, CLIENTS_LIST[3]: 5,CLIENTS_LIST[4] : 5}  # infer times for each device #server&client-side
 
 tolerance_counts = 0 #Number of allowances for exceeding max baseline in the reward function; Default 0

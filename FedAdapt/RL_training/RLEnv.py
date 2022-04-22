@@ -458,10 +458,6 @@ class RL_Client(Communicator):
 		self.net.train()
 		metrics_current_infer = {}
 		s_time_infer = time.perf_counter()
-		print("INSIDE CLIENT INFER 1")
-		print("Self SPlitlayer: " + str(self.split_layer))
-		print("Len config.model: " + str(len(config.model_cfg[self.model_name])))
-		print("Config.model " + str(config.model_cfg[self.model_name]))
 
 		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading  #model_cfg is a dict with 1 element with the key: "VGG5" and Value: Array of 7 elements; if split_layer is 6 then len(value) - 1 == 6;
 			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
@@ -488,8 +484,7 @@ class RL_Client(Communicator):
 				s_time_batch_infer = time.perf_counter()
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
-				##Offloading  ##Send some tasks to the server #TODO check serverside
-				print("INSIDE CLIENT INFER 2")
+				##Offloading  ##Send some tasks to the server 
 				msg = ['MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER', outputs.cpu(), targets.cpu()]
 				self.send_msg(self.sock, msg)
 					# Wait receiving server gradients 'MSG_SERVER_GRADIENTS_SERVER_TO_CLIENT_'
@@ -504,25 +499,17 @@ class RL_Client(Communicator):
 				metrics_current_infer['Batch_'+str(batch_idx)] = (iteration_time,indexes)
 				######Done Metrics Gathering
 
-				print("BATCH_IDX : CONFIG ITERATION")
-				print(str(batch_idx) + "  :  " + str(config.iteration[self.ip_address]))
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
-		print("INSIDE CLIENT INFER 3")
-		self.e_time_infer = time.perf_counter()
-		logger.info('Training time: ' + str(self.e_time_infer - s_time_infer))
+				
+		e_time_infer = time.perf_counter()
+		logger.info('Training time: ' + str(e_time_infer - s_time_infer))
+		infer_speed = (e_time_infer - s_time_infer) / config.iteration[self.ip_address]
+		infer_total_time = e_time_infer - s_time_infer
 
-		infer_speed = (self.e_time_infer - s_time_infer) / config.iteration[self.ip_address]
-		infer_total_time = self.e_time_infer - s_time_infer
-		
-		#To prevent desyncronization in case of very fast devices, all client must wait for the others to finish sending the 'MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER' before continuing to send MSG_INFER_SPEED sync flag
-		#self.recv_msg(self.sock,'DONE_INFERING')
-
-		#### OR MAYBE NOT? TEST IT!^
 		msg = ['MSG_INFER_SPEED', self.ip, infer_speed,infer_total_time, metrics_current_infer]
 		self.send_msg(self.sock, msg)
-		print("INSIDE CLIENT INFER 4")
-		return  #Since we care about 
+		return 
 		
 
 	def reinitialize(self, split_layers):

@@ -67,7 +67,7 @@ def client_main():
 		else:
 			rl_client.infer(trainloader)#can be either step, or episode_init time 
 
-		finish_time = rl_client.e_time_infer #time.perf_counter() 
+		finish_time = time.perf_counter() 
 		round_time = finish_time - start_time
 		rl_client.send_RW_metrics(round_time) #Send the RW metrics
 		
