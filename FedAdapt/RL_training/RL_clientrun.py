@@ -58,7 +58,7 @@ def client_main():
 			rl_client.send_msg_run_finished_client(time_client_total)
 			return
 		
-
+		
 		logger.info('==> Training Start..')
 		if first:
 			rl_client.infer(trainloader)

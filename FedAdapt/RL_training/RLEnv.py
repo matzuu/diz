@@ -437,6 +437,7 @@ class RL_Client(Communicator):
 		self.sock.connect((server_addr,server_port))
 
 	def initialize(self, split_layer):
+		print("STARTED initialize")
 		self.split_layer = split_layer
 		self.net = utils.get_model('Client', self.model_name, self.split_layer, self.device, self.model_cfg)
 		self.optimizer = optim.SGD(self.net.parameters(), lr=config.LR,
@@ -446,6 +447,7 @@ class RL_Client(Communicator):
 		# First test network speed
 		network_time_start = time.time()
 		msg = ['MSG_TEST_NETWORK_SPEED', self.uninet.cpu().state_dict()]
+		print("AFTER FIRST NETWORK SPEED TEST")
 		self.send_msg(self.sock, msg)
 		msg = self.recv_msg(self.sock,'MSG_TEST_NETWORK_SPEED')[1]
 		network_time_end = time.time()
@@ -453,6 +455,7 @@ class RL_Client(Communicator):
 
 		msg = ['MSG_TEST_NETWORK_SPEED', self.ip, network_speed]
 		self.send_msg(self.sock, msg)
+		print("FINISHED initialize")
 
 	def infer(self, trainloader):  #Client Infer
 		self.net.to(self.device)
