@@ -437,7 +437,6 @@ class RL_Client(Communicator):
 		self.sock.connect((server_addr,server_port))
 
 	def initialize(self, split_layer):
-		print("STARTED initialize")
 		self.split_layer = split_layer
 		self.net = utils.get_model('Client', self.model_name, self.split_layer, self.device, self.model_cfg)
 		self.optimizer = optim.SGD(self.net.parameters(), lr=config.LR,
@@ -447,7 +446,6 @@ class RL_Client(Communicator):
 		# First test network speed
 		network_time_start = time.time()
 		msg = ['MSG_TEST_NETWORK_SPEED', self.uninet.cpu().state_dict()]
-		print("AFTER FIRST NETWORK SPEED TEST")
 		self.send_msg(self.sock, msg)
 		msg = self.recv_msg(self.sock,'MSG_TEST_NETWORK_SPEED')[1]
 		network_time_end = time.time()
@@ -455,14 +453,13 @@ class RL_Client(Communicator):
 
 		msg = ['MSG_TEST_NETWORK_SPEED', self.ip, network_speed]
 		self.send_msg(self.sock, msg)
-		print("FINISHED initialize")
 
 	def infer(self, trainloader):  #Client Infer
 		self.net.to(self.device)
 		self.net.train()
 		metrics_current_infer = {}
 		s_time_infer = time.perf_counter()
-		
+		print("INSIDE CLIENT INFER 1")
 		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading  #model_cfg is a dict with 1 element with the key: "VGG5" and Value: Array of 7 elements; if split_layer is 6 then len(value) - 1 == 6;
 			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
 				s_time_batch_infer = time.perf_counter()	
@@ -489,6 +486,7 @@ class RL_Client(Communicator):
 				inputs, targets = inputs.to(self.device), targets.to(self.device)
 				outputs = self.net(inputs)
 				##Offloading  ##Send some tasks to the server #TODO check serverside
+				print("INSIDE CLIENT INFER 2")
 				msg = ['MSG_LOCAL_ACTIVATIONS_CLIENT_TO_SERVER', outputs.cpu(), targets.cpu()]
 				self.send_msg(self.sock, msg)
 					# Wait receiving server gradients 'MSG_SERVER_GRADIENTS_SERVER_TO_CLIENT_'
@@ -505,7 +503,7 @@ class RL_Client(Communicator):
 
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					break
-
+		print("INSIDE CLIENT INFER 3")
 		e_time_infer = time.perf_counter()
 		logger.info('Training time: ' + str(e_time_infer - s_time_infer))
 
@@ -515,7 +513,7 @@ class RL_Client(Communicator):
 
 		msg = ['MSG_INFER_SPEED', self.ip, infer_speed,infer_total_time, metrics_current_infer]
 		self.send_msg(self.sock, msg)
-
+		print("INSIDE CLIENT INFER 4")
 		
 
 	def reinitialize(self, split_layers):
