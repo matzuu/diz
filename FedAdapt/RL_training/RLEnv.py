@@ -461,6 +461,7 @@ class RL_Client(Communicator):
 		s_time_infer = time.perf_counter()
 		print("INSIDE CLIENT INFER 1")
 		if self.split_layer == len(config.model_cfg[self.model_name]) -1: # No offloading  #model_cfg is a dict with 1 element with the key: "VGG5" and Value: Array of 7 elements; if split_layer is 6 then len(value) - 1 == 6;
+			print("AUX PRINT" + str(self.split_layer)  + str(config.model_cfg[self.model_name]))
 			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)): #Enumerate makes multi-process dataloader 
 				s_time_batch_infer = time.perf_counter()	
 
