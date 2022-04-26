@@ -21,7 +21,7 @@ def scope1():
     data_lenght_range = [10000,25000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000
     learning_rate_range = [0.005,0.01,0.03] #0.005,0.01,0.03  # 3   
     max_update_epochs_range = [5,10,50] #[5,10,50] # 3
-    tolerance_range = [2] #[0,1,2] # 3
+    tolerance_range = [0,1,2] #[0,1,2] # 3
     print("Total number of expected benchmark runs: " + str(len(episode_range)*len(iteration_range)*len(batch_size_range)*len(data_lenght_range)*len(learning_rate_range)*len(max_update_epochs_range)*len(tolerance_range)))
     time.sleep(2)
     ################

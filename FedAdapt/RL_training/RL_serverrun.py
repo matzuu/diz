@@ -67,6 +67,10 @@ def server_main(run_identifier: str):
 		env.ep_cpu_wastage_overhead["server"] = ep_cpu_wastage_server
 		env.ep_ram_wastage_overhead["server"] = ep_ram_wastage_server
 		env.ep_disk_wastage_overhead["server"] = ep_disk_wastage_server
+		if i_episode > 10:
+			#print("EP: " + str(i_episode))
+			continue
+
 		for t in range(config.max_timesteps):
 			############
 			####STEP####
