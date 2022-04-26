@@ -18,10 +18,10 @@ def scope1():
     episode_range = [10]#,50,100] #[1,10,50,100] # 4 #Finished 1    3~4min/run for 10 epis
     iteration_range = [20] #[5,20,50,100] # 4 
     batch_size_range = [100,200] #[10,50,100,200] #4 
-    data_lenght_range = [5000,10000,25000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000
+    data_lenght_range = [10000,25000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000
     learning_rate_range = [0.005,0.01,0.03] #0.005,0.01,0.03  # 3   
     max_update_epochs_range = [5,10,50] #[5,10,50] # 3
-    tolerance_range = [0,1,2] #[0,1,2] # 3
+    tolerance_range = [2] #[0,1,2] # 3
     print("Total number of expected benchmark runs: " + str(len(episode_range)*len(iteration_range)*len(batch_size_range)*len(data_lenght_range)*len(learning_rate_range)*len(max_update_epochs_range)*len(tolerance_range)))
     time.sleep(2)
     ################
