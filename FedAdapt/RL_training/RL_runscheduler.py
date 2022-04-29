@@ -15,13 +15,14 @@ def scope1():
     
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nStarted run scheduler. The runs will take a while...")
-    episode_range = [10]#,50,100] #[1,10,50,100] # 4 #Finished 1    3~4min/run for 10 epis
-    iteration_range = [20] #[5,20,50,100] # 4 
-    batch_size_range = [200] #[10,50,100,200] #4 
-    data_lenght_range = [25000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000
-    learning_rate_range = [0.03] #0.005,0.01,0.03  # 3   
-    max_update_epochs_range = [5,10,50] #[5,10,50] # 3
-    tolerance_range = [0,1,2] #[0,1,2] # 3
+    #Stoped at ep 10 and iter 50
+    episode_range = [10,30]#,50,100] #[1,10,50,100] # 4 #Finished 1    3~4min/run for 10 epis  DEF 100
+    iteration_range = [5,20] #[5,20,50,100] # 4  ##DEF 5
+    batch_size_range = [10,100] #[10,50,100,200] #4 ##DEF 100
+    data_lenght_range = [10000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000  ##DEF 50.000
+    learning_rate_range = [0.005,0.01] #0.005,0.01,0.03  # 3   ##DEF 0.01
+    max_update_epochs_range = [1,3,5,10,15,20,30,40] #[5,10,50] # 3 ##DEF 10
+    tolerance_range = [0] #[0,1,2] # 3   ##DEF 0
     print("Total number of expected benchmark runs: " + str(len(episode_range)*len(iteration_range)*len(batch_size_range)*len(data_lenght_range)*len(learning_rate_range)*len(max_update_epochs_range)*len(tolerance_range)))
     time.sleep(2)
     ################
@@ -50,6 +51,7 @@ def scope1():
                                     config.tolerance_counts = t
 
                                     try:
+
                                         time_server_start = time.perf_counter()
                                         print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################")   
                                         #######################             
