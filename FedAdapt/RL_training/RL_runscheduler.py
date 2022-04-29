@@ -51,18 +51,18 @@ def scope1():
                                     config.tolerance_counts = t
 
                                     try:
+                                        if(m * e < 500): #want to gurantee a certain amount of steps to get metrics from
+                                            time_server_start = time.perf_counter()
+                                            print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################")   
+                                            #######################             
+                                            run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
+                                            try:
+                                                os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
+                                            except Exception as exception_file_already_removed:
+                                                pass #file already removed
 
-                                        time_server_start = time.perf_counter()
-                                        print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################")   
-                                        #######################             
-                                        run_identifier = "E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t)
-                                        try:
-                                            os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
-                                        except Exception as exception_file_already_removed:
-                                            pass #file already removed
-
-                                        ####################
-                                        start_run(run_identifier,device_type)
+                                            ####################
+                                            start_run(run_identifier,device_type)
                                         
                                     except Exception as exception:
                                         print("EXCEPTION OCCURED DURING RUN: E"+str(e)+"_I"+str(i)+"_B"+str(b)+"_D"+str(d)+"_L"+str(l)+ "_M"+str(m)+"_T"+str(t))
