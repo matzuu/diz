@@ -17,10 +17,10 @@ def scope1():
     print("########################## \nStarted run scheduler. The runs will take a while...")
     #Stoped at ep 10 and iter 50
     episode_range = [10,30]#,50,100] #[1,10,50,100] # 4 #Finished 1    3~4min/run for 10 epis  DEF 100
-    iteration_range = [5,20] #[5,20,50,100] # 4  ##DEF 5
+    iteration_range = [2,5,20] #[5,20,50,100] # 4  ##DEF 5
     batch_size_range = [10,100] #[10,50,100,200] #4 ##DEF 100
-    data_lenght_range = [10000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000  ##DEF 50.000
-    learning_rate_range = [0.001,0.002,0.005,0.02,0.05,0.1,0.2] #0.005,0.01,0.03  # 3   ##DEF 0.01
+    data_lenght_range = [1000,5000,10000,50000]# [5000,10000,25000,50000] #4   1000 / 2000 / 5000 / 100000  ##DEF 50.000
+    learning_rate_range = [0.005,0.01] #0.005,0.01,0.03  # 3   ##DEF 0.01
     max_update_epochs_range = [10,30] #[5,10,50] # 3 ##DEF 10
     tolerance_range = [0] #[0,1,2] # 3   ##DEF 0
     print("Total number of expected benchmark runs: " + str(len(episode_range)*len(iteration_range)*len(batch_size_range)*len(data_lenght_range)*len(learning_rate_range)*len(max_update_epochs_range)*len(tolerance_range)))
