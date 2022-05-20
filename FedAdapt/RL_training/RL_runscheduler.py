@@ -51,7 +51,7 @@ def scope1():
                                     config.tolerance_counts = t
 
                                     try:
-                                        if(m * e <= 1000): #want to gurantee a certain amount of steps to get metrics from
+                                        if(m * e <= 1000 or 1>0): #want to gurantee a certain amount of steps to get metrics from
                                             time_server_start = time.perf_counter()
                                             print("##########################\nRUN METRICS: \n  E: "+str(e)+" \n  I: "+str(i)+ "\n  B: "+str(b)+" \n  D: "+str(d)+" \n  L: "+str(l)+ "\n  M: "+str(m)+" \n  T: "+str(t)+"\n##########################")   
                                             #######################             
