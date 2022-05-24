@@ -16,7 +16,7 @@ def scope1():
     #Episode, Tolerance, Update_epochs?, Steps?, Iter
     print("########################## \nStarted run scheduler. The runs will take a while...")
     #Stoped at ep 10 and iter 50
-    episode_range = [10,30] #DEF [10,30]#    3~4min/run for 10 epis  
+    episode_range = [30] #DEF [10,30]#    3~4min/run for 10 epis  
     iteration_range = [100] #DEF [5,25]  #REDO WITH 25,50,100
     batch_size_range = [100] #DEF [50,100] ##
     data_lenght_range = [10000,50000]# DEF[10000,50000] #Cannot do 1000
