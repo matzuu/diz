@@ -1,0 +1,85 @@
+2022-04-17 18:56:00,437 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.Subset Sum
+2022-04-17 18:56:00,441 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.Subset Sum
+2022-05-24 14:50:44,668 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1
+2022-05-24 14:50:45,039 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1
+2022-05-24 14:56:14,417 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1
+2022-05-24 14:56:14,421 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1
+2022-05-24 14:58:30,678 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1
+2022-05-24 14:58:30,682 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1
+2022-05-24 15:08:24,132 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1
+2022-05-24 15:08:24,137 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1
+2022-05-24 15:10:57,546 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:10:57,552 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:14:18,798 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:14:18,803 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:16:54,981 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:16:54,987 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:27:06,485 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 15:27:06,491 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 16:47:23,653 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 16:47:23,655 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:08:57,147 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:08:57,149 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:09:24,913 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:09:24,915 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:13:59,607 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 17:13:59,610 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:06:55,943 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:06:55,947 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:08:29,010 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:08:29,014 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:11:23,911 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:11:23,914 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:17:01,664 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:17:01,668 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:26:55,858 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:26:55,861 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:33:41,267 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-05-24 19:33:41,272 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-05-29 16:06:11,414 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-05-29 16:06:11,470 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-05-29 16:08:24,047 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-05-29 16:08:24,051 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-05-31 12:58:56,689 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-05-31 12:58:57,045 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-05-31 13:01:28,487 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-05-31 13:01:28,492 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-06-01 12:05:30,665 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-06-01 12:05:30,800 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-06-01 12:10:18,255 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:10:18,353 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:17:23,042 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:17:23,045 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:20:16,355 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:20:16,358 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:30:19,367 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 12:30:19,372 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 14:06:02,202 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 14:06:02,235 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 14:10:03,911 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-01 14:10:03,917 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-01 21:03:34,904 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-06-01 21:03:34,911 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-06-02 00:18:03,225 [MainThread  ] [INFO ]  Output file (function values): FUN.SMPSO.ZDT1_TEST_INT
+2022-06-02 00:18:03,317 [MainThread  ] [INFO ]  Output file (variables): VAR.SMPSO.ZDT1_TEST_INT
+2022-06-03 15:46:21,624 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:46:21,757 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:47:44,993 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:47:44,997 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:49:07,013 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:49:07,016 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:56:50,959 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:56:50,962 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:58:15,496 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:58:15,500 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:58:16,005 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:58:16,007 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:59:51,484 [MainThread  ] [INFO ]  Output file (function values): FUN.NSGAII.ZDT1_TEST_INT
+2022-06-03 15:59:51,488 [MainThread  ] [INFO ]  Output file (variables): VAR.NSGAII.ZDT1_TEST_INT
+2022-06-07 16:37:12,883 [MainThread  ] [INFO ]  Output file (function values): FUNNSGAII_Test_2d 5000e 200p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-07 16:37:12,918 [MainThread  ] [INFO ]  Output file (variables): VARNSGAII_Test_2d 5000e 200p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-08 19:13:24,582 [MainThread  ] [INFO ]  Output file (function values): FUNNSGAII_Test_2d 5000e 200p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-09 16:13:42,288 [MainThread  ] [INFO ]  Output file (function values): FUNSMPSO_Test_2d 5000e 200p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-09 16:13:42,399 [MainThread  ] [INFO ]  Output file (variables): VARSMPSO_Test_2d 5000e 200p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-09 16:14:36,471 [MainThread  ] [INFO ]  Output file (function values): FUNSMPSO_Test_2d 5000e 1000p 0.3mp 20.0md 1.0cp 20.0cd
+2022-06-09 16:14:36,475 [MainThread  ] [INFO ]  Output file (variables): VARSMPSO_Test_2d 5000e 1000p 0.3mp 20.0md 1.0cp 20.0cd

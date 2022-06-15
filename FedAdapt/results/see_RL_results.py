@@ -1190,7 +1190,7 @@ def display_boxplot_tolerance_vs_steptime_SingleClient(RL_res1,RL_res2,RL_res3,c
 
 if __name__ == "__main__":
 
-    # metrics_file1 = "RL_Metrics_E1_I5_B10_D5000"
+    metrics_file1 = "RL_Metrics_E20_I25_B100_D50000_L0.01_M30_T0"
     # metrics_file2 = "RL_Metrics_E1_I5_B10_D50000"
     # metrics_file3 = "RL_Metrics_E1_I5_B200_D5000"
     # metrics_file4 = "RL_Metrics_E1_I5_B200_D50000"
@@ -1236,7 +1236,7 @@ if __name__ == "__main__":
     # simple_print_avg_objectives(RL_res3,metrics_file3[11:])
     # simple_print_avg_objectives(RL_res4,metrics_file4[11:])
     
-    iterate_and_process_ALL_RUNS()
+    #iterate_and_process_ALL_RUNS()
     
     #Variables to consider Episodes nr, iteration number, batch_size, Datalenght_size, 
     print("FINIIIIIISH")

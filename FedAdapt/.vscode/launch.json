@@ -11,7 +11,10 @@
             "program": "${file}",
             //"args": ["--offload","True"],
             "args": ["server"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
+            
+
             
         }
     ]
