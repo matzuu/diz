@@ -142,6 +142,49 @@ def scope2():
 
     return
 
+def scope3():
+    print("Started scope 3: Default Params")
+    device_type = sys.argv[1]
+    reliability_runs = 10
+    variable_name_list = ['max_episodes',
+                   'max_iterations' ,
+                   'batch_size',
+                   'datasize_lenght',
+                   'learning_rate',
+                   'max_update_epochs'] 
+    
+
+    
+    for idx_r in range(reliability_runs):
+        run_identifier = "BASE_E100_I5_B100_D50000_LR0.01_M10_R"+str(idx_r)
+        print("Run metrics "+ run_identifier)
+        
+        time_server_start = time.perf_counter()            
+        try:
+            os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
+        except Exception as exception_file_already_removed:
+            pass #file already removed            
+        try:
+            start_run(run_identifier,device_type)
+        except Exception as exception:
+            print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
+            print("##" + str(exception))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+
+        time_server_finish = time.perf_counter()
+        print("FINISHED RUN: " + run_identifier)
+        print("RUN TIME: "+ str(time_server_finish-time_server_start))
+        if device_type == "server":
+            print("Waiting 5s for address deallocation...")
+            time.sleep(5) #waiting for de-allocation of server address
+        elif device_type == "client":
+            print("Waiting 8s for address deallocation...")
+            time.sleep(8) #waiting for de-allocation of server address
+
+    return
+
 def start_run(run_identifier,device_type):
     
     if device_type == "server":
@@ -152,7 +195,8 @@ def start_run(run_identifier,device_type):
 
 if __name__ == "__main__": 
     #scope1()
-    scope2()
+    #scope2()
+    scope3()
 
     print("DONE")
     

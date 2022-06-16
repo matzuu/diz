@@ -41,19 +41,19 @@ def simple_get_and_print_real_data_avg_objectives(RL_res1,run_identifier):
     #print("AVG:  TOTAL_T \tSTEP_T \t\tCPU_W \t\tRAM_W \t\tREWARDS \t### RUN IDENTIFIER")
     #print("   :  "+ total_run_time+ "\t"+avg_train_time+ "\t\t" + avg_cpu_wastage + "\t\t" +avg_ram_wastage + "\t\t" +avg_rewards +"\t\t### "+ run_identifier)
     return float(avg_train_time),float(avg_rewards), round((float(avg_cpu_wastage)+float(avg_ram_wastage)),3)
-def create_df_from_X_RUNS(max_runs = 100000):
+def create_df_from_X_RUNS(folder = "metrics", max_runs = 100000):
     import re
 
     whole_df = pd.DataFrame()
 
     file_counter = 0
 
-    total_files = str(len(os.listdir('./results/metrics')))
+    total_files = str(len(os.listdir('./results/' + folder +"/")))
     print ("## Processed " + str(file_counter) +" files out of " + total_files)
 
-    for file_name in os.listdir('./results/metrics'):
+    for file_name in os.listdir('./results/' + folder+"/"):
         try:
-            with open("./results/metrics/"+file_name, 'rb') as f:
+            with open("./results/"+ folder+"/" + file_name, 'rb') as f:
                 RL_res1 = pickle.load(f)
 
             #simple_print_avg_objectives(RL_res1,run_identifier)
@@ -120,8 +120,8 @@ def get_step_metrics_from_run(RL_res1,max_episodes,max_iterations,batch_size,dat
                    })
 
     return current_run_df
-def create_file_DF_from_ALL_metrics(filename = "Aggregated_panda_DF"):
-    whole_df = create_df_from_X_RUNS()
+def create_file_DF_from_ALL_metrics(filename = "Aggregated_panda_DF",folder = "metrics"):
+    whole_df = create_df_from_X_RUNS(folder)
     file_path = config.home + './results/'+ filename +'.pkl'
     whole_df.to_pickle(file_path)
     print(whole_df)
@@ -515,7 +515,7 @@ def print_real_vs_simulated_error(df,objective,variable_name_list):
 
 def plot_simulated_obj_function(df,objective,variable_name_list):
 
-    f_list = get_interpolating_functions_list(objective,variable_name_list)
+    f_list = get_interpolating_functions_list(df,objective,variable_name_list)
     corr_arr = get_correlation_of_objective_for_all_variables(df,objective,variable_name_list)
 
     lower_bound = [1,1,1,1000,1,1]
@@ -570,16 +570,20 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
 #####################################  MAIN  ####################################################
 #################################################################################################
 if __name__ == "__main__":
-    #create_file_DF_from_ALL_metrics() 
+    #create_file_DF_from_ALL_metrics() #
+    
     #create_file_small_DF_from_metrics()
+    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF","metrics_MOO_test") #TODO RUN#
 
     df = get_df_from_file()
     print(df)
+    df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
+    print(df_moo)
     #df = get_df_from_file('./results/small_panda_DF.pkl')
 
     ##TESTING DF
     
-    get_unique_hyperparams_df(df)
+    get_unique_hyperparams_df(df_moo)
 
     #print(df)
 
@@ -590,22 +594,22 @@ if __name__ == "__main__":
                    'learning_rate',
                    'max_update_epochs'] 
 
-    # plot_simulated_obj_function(df,"train_times",variable_name_list)
-    plot_simulated_obj_function(df,"rewards",variable_name_list)
-    plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
+    # # plot_simulated_obj_function(df,"train_times",variable_name_list)
+    # plot_simulated_obj_function(df,"rewards",variable_name_list) #must provide big dataset
+    # plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
 
-    print_real_vs_simulated_error(df,"train_times",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
-    print("Corelation between train_times and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"train_times",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    # print("Corelation between train_times and variables:" + str(corr_arr))
 
 
-    print_real_vs_simulated_error(df,"rewards",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    print("Corelation between rewards and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"rewards",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    # print("Corelation between rewards and variables:" + str(corr_arr))
 
-    print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
-    print("Corelation between resource_wastages and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # print("Corelation between resource_wastages and variables:" + str(corr_arr))
 
 
     # get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
@@ -624,9 +628,29 @@ if __name__ == "__main__":
 
 
     
+    corr_arr_train_times = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    corr_arr_rewards = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    corr_arr_resource_wastages = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
 
+    f_list_train_times = get_interpolating_functions_list(df,"train_times",variable_name_list)
+    f_list_rewards = get_interpolating_functions_list(df,"rewards",variable_name_list)
+    f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
 
-    
+    simul_value = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
+                                                                39,
+                                                                2,
+                                                                150,
+                                                                1566,
+                                                                0.005, #learning rate#
+                                                                5)
+
+    simul_value2 = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
+                                                                40,
+                                                                1,
+                                                                150,
+                                                                24026,
+                                                                0.005, #learning rate#
+                                                                5)
 
    
     print("FINIISH")
