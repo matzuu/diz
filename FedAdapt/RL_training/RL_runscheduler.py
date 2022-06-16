@@ -125,7 +125,7 @@ def scope2():
                 start_run(run_identifier,device_type)
             except Exception as exception:
                 print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
-                print("##" + exception)
+                print("##" + str(exception))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)

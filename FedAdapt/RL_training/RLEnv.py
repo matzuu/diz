@@ -480,8 +480,7 @@ class RL_Client(Communicator):
 				if batch_idx >= config.iteration[self.ip_address]-1:
 					print(" EXCEPTION OCCURS: ")
 					print("Batch_idx:" + str(batch_idx))
-					print("config.interation" + config.iteration[self.ip_address])
-
+					print("config.interation" + str(config.iteration[self.ip_address]))
 					print("END")
 					break
 		else: # Offloading training
