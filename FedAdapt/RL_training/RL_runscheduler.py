@@ -107,7 +107,8 @@ def scope2():
     for combination in variables_list:
         for idx_r in range(reliability_runs):
             config.max_episodes = combination[0]
-            config.iteration = combination[1]
+            new_iter_dict = {x: combination[1] for x in config.iteration} #Changes all the values in dict to the integer i
+            config.iteration = new_iter_dict
             config.B = combination[2]
             config.N = combination[3]
             config.LR = combination[4]/1000 
