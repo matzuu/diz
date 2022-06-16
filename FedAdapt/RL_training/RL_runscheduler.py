@@ -98,6 +98,12 @@ def scope2():
     variables_list.append(moo_result1)
     variables_list.append(moo_result2)
 
+    print("Total number of expected benchmark runs: " + str(reliability_runs * len(variables_list)))
+    time.sleep(2)
+    ################
+    ##################
+    psutil.cpu_percent()
+
     for combination in variables_list:
         for idx_r in range(reliability_runs):
             config.max_episodes = combination[0]
@@ -107,8 +113,28 @@ def scope2():
             config.LR = combination[4]/1000 
             config.max_update_epochs = combination[5]
             run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])
-            start_run(run_identifier,device_type)
+            print("Run metrics "+ run_identifier)
+            
+            time_server_start = time.perf_counter()            
+            try:
+                os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
+            except Exception as exception_file_already_removed:
+                pass #file already removed            
+            try:
+                start_run(run_identifier,device_type)
+            except Exception as exception:
+                print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
+                print(exception)
 
+            time_server_finish = time.perf_counter()
+            print("FINISHED RUN: " + run_identifier)
+            print("RUN TIME: "+ str(time_server_finish-time_server_start))
+            if device_type == "server":
+                print("Waiting 5s for address deallocation...")
+                time.sleep(5) #waiting for de-allocation of server address
+            elif device_type == "client":
+                print("Waiting 8s for address deallocation...")
+                time.sleep(8) #waiting for de-allocation of server address
 
     return
 
