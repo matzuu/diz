@@ -478,10 +478,6 @@ class RL_Client(Communicator):
 				######Done Metrics Gathering
 
 				if batch_idx >= config.iteration[self.ip_address]-1:
-					print(" EXCEPTION OCCURS: ")
-					print("Batch_idx:" + str(batch_idx))
-					print("config.interation" + str(config.iteration[self.ip_address]))
-					print("END")
 					break
 		else: # Offloading training
 			for batch_idx, (inputs, targets, indexes) in enumerate(tqdm.tqdm(trainloader)):
