@@ -112,7 +112,7 @@ def scope2():
             config.N = combination[3]
             config.LR = combination[4]/1000 
             config.max_update_epochs = combination[5]
-            run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])
+            run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])+"_R"+str(idx_r)
             print("Run metrics "+ run_identifier)
             
             time_server_start = time.perf_counter()            
@@ -124,7 +124,10 @@ def scope2():
                 start_run(run_identifier,device_type)
             except Exception as exception:
                 print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
-                print(exception)
+                print("##" + exception)
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
 
             time_server_finish = time.perf_counter()
             print("FINISHED RUN: " + run_identifier)
