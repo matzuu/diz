@@ -46,7 +46,7 @@ def run_MAIN_moo():
 
     range_obj = [3] #[2,3]
     range_evals = [5000] #[1000,2000,5000,10000]
-    range_pop_size = [100,200] # [100,200,300,500,1000] # 1500 takes 2x 1000
+    range_pop_size = [200] # [100,200,300,500,1000] # 1500 takes 2x 1000
     range_mutation_p = [0.6,0.7,0.8] # [0.0,0.1,0.5,0.9,1.0]
     range_mutation_dist_i = [5.0] # [5.0,20.0,100.0,400.0]
     range_crossover_p = [1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]

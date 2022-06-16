@@ -3,3 +3,7 @@
 **/venv
 **/__pycache__
 **/miniconda3
+**/results/RL_Metrics*
+**/results/old*
+**/results/metrics*
+
