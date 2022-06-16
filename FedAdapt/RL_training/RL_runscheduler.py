@@ -84,8 +84,8 @@ def scope1():
 
 def scope2():
     print("Started scope 2")
-
-    
+    device_type = sys.argv[1]
+    reliability_runs = 5
     moo_result1 = [39, 2, 150, 1566, 5, 5] # [0.8541, 2.3078, 88.6135]
     moo_result2 = [40, 1, 150, 24026, 5, 5] # [1.1688, 2.4039, 425.0163]
     variable_name_list = ['max_episodes',
@@ -99,14 +99,15 @@ def scope2():
     variables_list.append(moo_result2)
 
     for combination in variables_list:
-        config.max_episodes = combination[0]
-        config.iteration = combination[1]
-        config.B = combination[2]
-        config.N = combination[3]
-        config.LR = combination[4] 
-        config.max_update_epochs = combination[5]
-        run_identifier = "TEST" + str(combination)
-        start_run(run_identifier)
+        for idx_r in range(reliability_runs):
+            config.max_episodes = combination[0]
+            config.iteration = combination[1]
+            config.B = combination[2]
+            config.N = combination[3]
+            config.LR = combination[4]/1000 
+            config.max_update_epochs = combination[5]
+            run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])
+            start_run(run_identifier,device_type)
 
 
     return
@@ -120,7 +121,9 @@ def start_run(run_identifier,device_type):
 
 
 if __name__ == "__main__": 
-    scope1()
-    #objective2()
+    #scope1()
+    scope2()
+
+    print("DONE")
     
 
