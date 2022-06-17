@@ -45,12 +45,12 @@ def run_MAIN_moo():
     
 
     range_obj = [3] #[2,3]
-    range_evals = [5000] #[1000,2000,5000,10000]
+    range_evals = [2000,5000,10000,15000,25000] #[1000,2000,5000,10000]
     range_pop_size = [200] # [100,200,300,500,1000] # 1500 takes 2x 1000
-    range_mutation_p = [0.45,0.5,0.55] # [0.0,0.1,0.5,0.9,1.0]
+    range_mutation_p = [0.5] # [0.0,0.1,0.5,0.9,1.0]
     range_mutation_dist_i = [5.0] # [5.0,20.0,100.0,400.0]
     range_crossover_p = [1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]
-    range_crossover_dist_i = [80.0,90,100.0] #[40.0+] [5.0,20.0,100.0,400.0]
+    range_crossover_dist_i = [90.0] #[40.0+] [5.0,20.0,100.0,400.0]
     reliability_runs = 5
 
     total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
@@ -242,11 +242,11 @@ if __name__ == "__main__":
     
     #run_MAIN_moo()
 
-    algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d2.pkl'
-    moo_df = get_df_from_file(file_path)
-    print(moo_df)   
-    visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'])
+    # algorithm_name = "NSGAII"
+    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d2.pkl'
+    # moo_df = get_df_from_file(file_path)
+    # print(moo_df)   
+    # visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'])
     
     
     print("FINISH")
