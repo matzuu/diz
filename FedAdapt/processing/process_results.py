@@ -162,7 +162,8 @@ def visualize_boxplots_of_objective_based_on_variable(df,objective,variable):
     metrics_dict = get_values_of_column1_based_on_column2_criteria(df,objective,variable)
 
     #Sort the dict
-    if(variable == "learning_rate" or variable == "hypervolume" or variable == "avg_crowding_distance"): 
+    float_vars_list = ['learning_rate','hypervolume','avg_crowding_distance','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx']
+    if(variable in float_vars_list): 
         metrics_dict= dict(sorted(metrics_dict.items(), key=lambda x: float(x[0]))) #float values
     else: #variable isn't float        
         metrics_dict= dict(sorted(metrics_dict.items(), key=lambda x: int(x[0]))) #int values
@@ -190,7 +191,6 @@ def visualize_boxplots_of_objective_based_on_variable(df,objective,variable):
     # show plot
     plt.show()
 def get_values_of_column1_based_on_column2_criteria(df: pd.DataFrame,column1_name: str,column2_name: str)-> dict:
-
 
     column2_value_range = df[column2_name].unique()
 
