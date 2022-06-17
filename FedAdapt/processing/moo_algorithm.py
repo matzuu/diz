@@ -42,21 +42,19 @@ def run_MAIN_moo():
     f_list_rewards = get_interpolating_functions_list(df,"rewards",variable_name_list)
     f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
 
-    
-
     range_obj = [3] #[2,3]
-    range_evals = [2000,5000,10000,15000,25000] #[1000,2000,5000,10000]
-    range_pop_size = [200] # [100,200,300,500,1000] # 1500 takes 2x 1000
+    range_evals = [10000] #[1000,2000,5000,10000]
+    range_pop_size = [100] # [100,200,300,500,1000] # 1500 takes 2x 1000
     range_mutation_p = [0.5] # [0.0,0.1,0.5,0.9,1.0]
     range_mutation_dist_i = [5.0] # [5.0,20.0,100.0,400.0]
     range_crossover_p = [1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]
     range_crossover_dist_i = [90.0] #[40.0+] [5.0,20.0,100.0,400.0]
-    reliability_runs = 5
+    reliability_runs = 1
 
     total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
 
     algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d2.pkl'
+    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d3.pkl'
     moo_df = get_df_from_file(file_path)
     print(moo_df)
     #moo_df = pd.DataFrame()
@@ -150,7 +148,7 @@ def run_MAIN_moo():
                                         # )
                                         # algorithm_name = "SMPSO"
 
-                                        label_name = algorithm_name +"_Test_" + str(obj_nr)+"d "+ str(max_evals)+"e "+str(pop_size)+"p "+str(mutation_prob) +"mp "+str(mutation_distr_i) +"md "+str(crossover_prob) +"cp "+str(crossover_distr_i) + "cd"
+                                        label_name = algorithm_name +" " + str(obj_nr)+"d "+ str(max_evals)+"e "+str(pop_size)+"p "+str(mutation_prob) +"mp "+str(mutation_distr_i) +"md "+str(crossover_prob) +"cp "+str(crossover_distr_i) + "cd"
 
                                         print("### Alg running with params: " + label_name)
                                         algorithm.run()
@@ -180,8 +178,8 @@ def run_MAIN_moo():
 
                                         from jmetal.lab.visualization import Plot
 
-                                        # plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
-                                        # plot_front.plot(front, label=label_name, filename=label_name, format='png')
+                                        plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
+                                        plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx), format='png')
 
                                         ############CONCAT THE DF
 
@@ -224,7 +222,6 @@ def set_crowding_distance(front):
     return front , sum_crowding_d / len(front)
     #tread edge cases S[0], S[n]
 
-
 def combine_duplicate_rows_of_dataframe(moo_df):
     moo_df = moo_df.groupby(['algorithm','objective_number','evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'],as_index=False).mean()
     moo_df = moo_df.sort_values(by=['hypervolume'], ascending = False)
@@ -240,11 +237,15 @@ def visualize_boxplots(moo_df,name_of_value_for_boxplots,list_of_column_names):
 ######################################
 if __name__ == "__main__":
     
-    #run_MAIN_moo()
+    run_MAIN_moo()
 
     # algorithm_name = "NSGAII"
     # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d2.pkl'
+    # moo_df2 = get_df_from_file(file_path)
+    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d1.pkl'
     # moo_df = get_df_from_file(file_path)
+
+    # moo_df = pd.concat([moo_df,moo_df2],ignore_index= True)
     # print(moo_df)   
     # visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'])
     

@@ -85,18 +85,15 @@ def scope1():
 def scope2():
     print("Started scope 2")
     device_type = sys.argv[1]
-    reliability_runs = 5
-    moo_result1 = [39, 2, 150, 1566, 5, 5] # [0.8541, 2.3078, 88.6135]
-    moo_result2 = [40, 1, 150, 24026, 5, 5] # [1.1688, 2.4039, 425.0163]
+    reliability_runs = 4
+    
     variable_name_list = ['max_episodes',
                    'max_iterations' ,
                    'batch_size',
                    'datasize_lenght',
                    'learning_rate',
                    'max_update_epochs'] 
-    variables_list = []
-    variables_list.append(moo_result1)
-    variables_list.append(moo_result2)
+    variables_list = [[10, 2, 459, 1000, 2, 5],[30, 2, 459, 1000, 21, 5],[30, 2, 403, 1000, 2, 5],[30, 2, 459, 1000, 3, 5],[7, 2, 30, 1099, 5, 5],[30, 2, 30, 1885, 5, 5],[28, 2, 30, 3031, 5, 5],[6, 2, 30, 4786, 5, 5],[4, 1, 30, 2656, 5, 5],[42, 1, 30, 4007, 5, 5],[8, 1, 30, 16991, 5, 5],[5, 1, 30, 23879, 5, 5],[4, 1, 30, 25052, 5, 5]]
 
     print("Total number of expected benchmark runs: " + str(reliability_runs * len(variables_list)))
     time.sleep(2)
@@ -195,8 +192,8 @@ def start_run(run_identifier,device_type):
 
 if __name__ == "__main__": 
     #scope1()
-    #scope2()
-    scope3()
+    scope2()
+    #scope3()
 
     print("DONE")
     
