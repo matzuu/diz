@@ -155,7 +155,7 @@ def scope3():
     
 
     
-    for idx_r in range(reliability_runs):
+    for idx_r in range(10,reliability_runs+10):
         run_identifier = "BASE_E100_I5_B100_D50000_LR0.01_M10_R"+str(idx_r)
         print("Run metrics "+ run_identifier)
         

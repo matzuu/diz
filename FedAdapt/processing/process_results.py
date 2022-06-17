@@ -574,11 +574,14 @@ if __name__ == "__main__":
     
     #create_file_small_DF_from_metrics()
     #create_file_DF_from_ALL_metrics("MOO_benchmark_DF","metrics_MOO_test") #TODO RUN#
+    #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
-    df = get_df_from_file()
-    print(df)
+    #df = get_df_from_file()
+    #print(df)
     df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
     print(df_moo)
+    df_base = get_df_from_file('./results/BASE_benchmark_DF.pkl')
+    print(df_base)
     #df = get_df_from_file('./results/small_panda_DF.pkl')
 
     ##TESTING DF
@@ -628,29 +631,34 @@ if __name__ == "__main__":
 
 
     
-    corr_arr_train_times = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
-    corr_arr_rewards = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    corr_arr_resource_wastages = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # corr_arr_train_times = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    # corr_arr_rewards = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    # corr_arr_resource_wastages = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
 
-    f_list_train_times = get_interpolating_functions_list(df,"train_times",variable_name_list)
-    f_list_rewards = get_interpolating_functions_list(df,"rewards",variable_name_list)
-    f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
+    # f_list_train_times = get_interpolating_functions_list(df,"train_times",variable_name_list)
+    # f_list_rewards = get_interpolating_functions_list(df,"rewards",variable_name_list)
+    # f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
 
-    simul_value = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
-                                                                39,
-                                                                2,
-                                                                150,
-                                                                1566,
-                                                                0.005, #learning rate#
-                                                                5)
+    # simul_value = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
+    #                                                             39,
+    #                                                             2,
+    #                                                             150,
+    #                                                             1566,
+    #                                                             0.005, #learning rate#
+    #                                                             5)
 
-    simul_value2 = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
-                                                                40,
-                                                                1,
-                                                                150,
-                                                                24026,
-                                                                0.005, #learning rate#
-                                                                5)
+    # simul_value2 = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
+    #                                                             40,
+    #                                                             1,
+    #                                                             150,
+    #                                                             24026,
+    #                                                             0.005, #learning rate#
+    #                                                             5)
 
+    df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
+    print(df_moo)
+    #df_moo = df_moo.sort_values(by=['train_time'], ascending = False)
+    df_base = df_base.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
+    print(df_base)
    
     print("FINIISH")
