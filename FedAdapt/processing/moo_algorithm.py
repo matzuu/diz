@@ -54,7 +54,7 @@ def run_MAIN_moo():
     total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
 
     algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d3.pkl'
+    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d4.pkl'
     moo_df = get_df_from_file(file_path)
     print(moo_df)
     #moo_df = pd.DataFrame()
@@ -73,7 +73,7 @@ def run_MAIN_moo():
             super(ZDT1_INT_TEST, self).__init__()
             self.number_of_variables = 6
             self.number_of_objectives = number_of_objs
-            self.number_of_constraints = 0
+            self.number_of_constraints = 1
 
             self.obj_directions = [self.MINIMIZE, self.MAXIMIZE, self.MINIMIZE][:number_of_objs]
             self.obj_labels = ['train_times', 'rewards', 'resource_wastages'][:number_of_objs]
@@ -106,8 +106,24 @@ def run_MAIN_moo():
                                                                     solution.variables[4]/1000, #learning rate
                                                                     solution.variables[5] )
 
+            self.__evaluate_constraints(solution)
+
             return solution
 
+        def __evaluate_constraints(self, solution: IntegerSolution) -> None:
+            constraints = [0.0 for _ in range(self.number_of_constraints)]
+
+            d = solution.variables[3]
+            b = solution.variables[2]
+            i = solution.variables[1]
+            ##MAX ITERATION NUMBER = DATASET_SIZE (d) / ( NUMBER OF DEVICES (K) * BATCH_SIZE (B) ) i.e 5000 / (5 * 100) = 10 Due to implementation issues with trainloader
+            ##therefore i must be <= than max_iter_number
+            max_iter_number = d / ( 5 * b )
+            constraints[0] = max_iter_number - i
+
+            solution.constraints = constraints
+
+        
         def get_name(self):
             return 'ZDT1_TEST_INT'
 
@@ -197,6 +213,21 @@ def run_MAIN_moo():
                                         
                                         moo_df = pd.concat([moo_df,current_run_df],ignore_index= True)
 
+
+                                        ####################save front variables
+                                        list_variables = []
+                                        counter_skip = 0
+                                        for sol in front:
+                                            max_iter_number =  sol.variables[3]/ ( 5 * sol.variables[2] )
+                                            if sol.variables[1] <= max_iter_number: #So that the training cna run; minimum batch/dataset/iter size
+                                                counter_skip += 1
+                                                if counter_skip % 5 == 0:
+                                                    counter_skip = 0
+                                                    list_variables.append(sol.variables)
+
+
+
+    print(list_variables)
     
     moo_df.to_pickle(file_path)
     print(moo_df)
