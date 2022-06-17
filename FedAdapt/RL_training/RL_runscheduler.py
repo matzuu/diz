@@ -27,6 +27,7 @@ def scope1():
     time.sleep(2)
     ################
     ##################
+    
     psutil.cpu_percent()
     for e in episode_range:
         config.max_episodes = e
@@ -100,42 +101,52 @@ def scope2():
     ################
     ##################
     psutil.cpu_percent()
-
+    run_counter = 0
+    total_runs = len(variables_list)
     for combination in variables_list:
         for idx_r in range(reliability_runs):
-            config.max_episodes = combination[0]
-            new_iter_dict = {x: combination[1] for x in config.iteration} #Changes all the values in dict to the integer i
-            config.iteration = new_iter_dict
-            config.B = combination[2]
-            config.N = combination[3]
-            config.LR = combination[4]/1000 
-            config.max_update_epochs = combination[5]
-            run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])+"_R"+str(idx_r)
-            print("Run metrics "+ run_identifier)
-            
-            time_server_start = time.perf_counter()            
-            try:
-                os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
-            except Exception as exception_file_already_removed:
-                pass #file already removed            
-            try:
-                start_run(run_identifier,device_type)
-            except Exception as exception:
-                print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
-                print("##" + str(exception))
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+            #[e,i,b,d,l,m]
+            run_counter +=1
+            if (run_counter % 5 == 0):
+                print("## RUN "+str(run_counter) + " out of " + str(total_runs))
+                
+            max_iter_number =  combination[3]/ ( 5 * combination[2] )
+            if combination[1] <= max_iter_number:
+                config.max_episodes = combination[0]
+                new_iter_dict = {x: combination[1] for x in config.iteration} #Changes all the values in dict to the integer i
+                config.iteration = new_iter_dict
+                config.B = combination[2]
+                config.N = combination[3]
+                config.LR = combination[4]/1000 
+                config.max_update_epochs = combination[5]
+                run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])+"_R"+str(idx_r)
+                print("Run metrics "+ run_identifier)
+                
 
-            time_server_finish = time.perf_counter()
-            print("FINISHED RUN: " + run_identifier)
-            print("RUN TIME: "+ str(time_server_finish-time_server_start))
-            if device_type == "server":
-                print("Waiting 5s for address deallocation...")
-                time.sleep(5) #waiting for de-allocation of server address
-            elif device_type == "client":
-                print("Waiting 8s for address deallocation...")
-                time.sleep(8) #waiting for de-allocation of server address
+
+                time_server_start = time.perf_counter()            
+                try:
+                    os.remove("PPO.pth") ##Remove old trained model, so it creates a new one,and trains without being influenced by previous trains
+                except Exception as exception_file_already_removed:
+                    pass #file already removed            
+                try:
+                    start_run(run_identifier,device_type)
+                except Exception as exception:
+                    print("EXCEPTION OCCURED DURING RUN:" + run_identifier)
+                    print("##" + str(exception))
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
+
+                time_server_finish = time.perf_counter()
+                print("FINISHED RUN: " + run_identifier)
+                print("RUN TIME: "+ str(time_server_finish-time_server_start))
+                if device_type == "server":
+                    print("Waiting 5s for address deallocation...")
+                    time.sleep(5) #waiting for de-allocation of server address
+                elif device_type == "client":
+                    print("Waiting 8s for address deallocation...")
+                    time.sleep(8) #waiting for de-allocation of server address
 
     return
 

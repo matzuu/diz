@@ -565,6 +565,39 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
 
     print("DONE")
 
+def lots_of_plots(df,variable_name_list):
+
+    plot_simulated_obj_function(df,"train_times",variable_name_list)
+    plot_simulated_obj_function(df,"rewards",variable_name_list) #must provide big dataset
+    plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
+
+    print_real_vs_simulated_error(df,"train_times",variable_name_list)    
+    corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    print("Corelation between train_times and variables:" + str(corr_arr))
+
+
+    print_real_vs_simulated_error(df,"rewards",variable_name_list)    
+    corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    print("Corelation between rewards and variables:" + str(corr_arr))
+
+    print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
+    corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    print("Corelation between resource_wastages and variables:" + str(corr_arr))
+
+
+    get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+
+    ##################################################
+    interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
+    interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
+    interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
+
+    visualize_boxplots_of_objective_base_on_all_variables(df,"train_times",variable_name_list)
+    visualize_boxplots_of_objective_base_on_all_variables(df,"rewards",variable_name_list)
+    visualize_boxplots_of_objective_base_on_all_variables(df,"resource_wastages",variable_name_list)
+
+    print("finished plotting")
 #def save_front_df(front,pop_size, mutation_prob, mutation_distr_i,crossover_prob,crossover_distr_i):
 #################################################################################################
 #####################################  MAIN  ####################################################
@@ -574,7 +607,7 @@ if __name__ == "__main__":
     
     #create_file_small_DF_from_metrics()
     #create_file_DF_from_ALL_metrics("MOO_benchmark_DF","metrics_MOO_test") #TODO RUN#
-    #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
+    create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
     #df = get_df_from_file()
     #print(df)
@@ -597,39 +630,10 @@ if __name__ == "__main__":
                    'learning_rate',
                    'max_update_epochs'] 
 
-    # # plot_simulated_obj_function(df,"train_times",variable_name_list)
-    # plot_simulated_obj_function(df,"rewards",variable_name_list) #must provide big dataset
-    # plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
-
-    # print_real_vs_simulated_error(df,"train_times",variable_name_list)    
-    # corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
-    # print("Corelation between train_times and variables:" + str(corr_arr))
+    #lots_of_plots(df,variable_name_list)
 
 
-    # print_real_vs_simulated_error(df,"rewards",variable_name_list)    
-    # corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    # print("Corelation between rewards and variables:" + str(corr_arr))
-
-    # print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
-    # corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
-    # print("Corelation between resource_wastages and variables:" + str(corr_arr))
-
-
-    # get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    # get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
-
-    ###################################################
-    #interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
-    # interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
-    # interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
-
-    #visualize_boxplots_of_objective_base_on_all_variables(df,"train_times",variable_name_list)
-    # visualize_boxplots_of_objective_base_on_all_variables(df,"rewards",variable_name_list)
-    # visualize_boxplots_of_objective_base_on_all_variables(df,"resource_wastages",variable_name_list)
-
-
-
-
+    ############################################################
     
     # corr_arr_train_times = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
     # corr_arr_rewards = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
