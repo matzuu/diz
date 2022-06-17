@@ -54,7 +54,7 @@ def run_MAIN_moo():
     total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
 
     algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d4.pkl'
+    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d5.pkl'
     moo_df = get_df_from_file(file_path)
     print(moo_df)
     #moo_df = pd.DataFrame()
@@ -194,8 +194,8 @@ def run_MAIN_moo():
 
                                         from jmetal.lab.visualization import Plot
 
-                                        plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
-                                        plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx), format='png')
+                                        # plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
+                                        # plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx), format='png')
 
                                         ############CONCAT THE DF
 

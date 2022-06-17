@@ -120,11 +120,18 @@ def get_step_metrics_from_run(RL_res1,max_episodes,max_iterations,batch_size,dat
                    })
 
     return current_run_df
-def create_file_DF_from_ALL_metrics(filename = "Aggregated_panda_DF",folder = "metrics"):
+def create_file_DF_from_ALL_metrics(filename = "Combined_bechmarks_DF",folder = "metrics"):
     whole_df = create_df_from_X_RUNS(folder)
     file_path = config.home + './results/'+ filename +'.pkl'
     whole_df.to_pickle(file_path)
     print(whole_df)
+
+def combine_dfs_to_file(df1,df2,combined_filename):
+    whole_df = pd.concat([df1,df2],ignore_index= True)
+    file_path = config.home + './results/'+ combined_filename +'.pkl'
+    whole_df.to_pickle(file_path)
+    print(whole_df)
+    return whole_df
 
 def create_file_small_DF_from_metrics(filename = "small_panda_DF"):
     whole_df = create_df_from_X_RUNS(20)
@@ -132,12 +139,12 @@ def create_file_small_DF_from_metrics(filename = "small_panda_DF"):
     whole_df.to_pickle(file_path)
     print(whole_df)
 
-def get_df_from_file(filepath = './results/Aggregated_panda_DF.pkl'):
+def get_df_from_file(filepath = './results/Combined_bechmarks_DF.pkl'):
     try:
         return pd.read_pickle(filepath)
     except:
         return pd.DataFrame()
-def get_hyperparams_metrics_from_df_file(filepath = './results/Aggregated_panda_DF.pkl'): ####NOT USED?
+def get_hyperparams_metrics_from_df_file(filepath = './results/Combined_bechmarks_DF.pkl'): ####NOT USED?
     
     df = get_df_from_file(filepath)
 
@@ -312,11 +319,15 @@ def calculate_objectives_score(objective, corr_arr, f_list ,v_max_episodes = 10,
     bias = [1,1,1,1,1,1]
     final_bias = 0
     if objective == "train_times":
-        bias = [0.1, 10, 1, 1, 0.1, 0.1]
-        final_bias = 0
+        bias = [0.1, 10, -10, 1, 0.1, 0.1]
+        final_bias = 1
     if objective == "rewards":
         bias = [0.1,10,5,1,1,0.5]
-        final_bias = 0
+        final_bias = -5.5
+
+    if objective == "resource_wastages":
+        bias = [1,1,5,1,1,1]
+        final_bias = 80
     w_max_episodes = corr_arr[0] * bias[0]
     w_max_iterations = corr_arr[1] * bias[1]
     w_batch_size = corr_arr[2] * bias[2]
@@ -389,7 +400,7 @@ def get_unique_hyperparams_df(df):
             print(col + ":     \t" + str(aux_list))
             hyperparams_list.append(aux_list)
 
-def print_real_vs_simulated_error(df,objective,variable_name_list):
+def print_real_vs_simulated_error_initial_runs(df,objective,variable_name_list):
     
     f_list = get_interpolating_functions_list(df,objective,variable_name_list)
     corr_arr = get_correlation_of_objective_for_all_variables(df,objective,variable_name_list)
@@ -512,6 +523,58 @@ def print_real_vs_simulated_error(df,objective,variable_name_list):
         print(str(key)+'\t: '+ str(value[0]) +'%    \t: '+str(value[1]) + 's')
     print("---------------------------------------------")
     ###################################################
+def error_real_vs_simulated_to_DF(df_combined,df_to_test,variable_name_list):##TODO: CONTINUE
+    
+    corr_arr_train_times = get_correlation_of_objective_for_all_variables(df_combined,"train_times",variable_name_list)
+    corr_arr_rewards = get_correlation_of_objective_for_all_variables(df_combined,"rewards",variable_name_list)
+    corr_arr_resource_wastages = get_correlation_of_objective_for_all_variables(df_combined,"resource_wastages",variable_name_list)
+
+    f_list_train_times = get_interpolating_functions_list(df_combined,"train_times",variable_name_list)
+    f_list_rewards = get_interpolating_functions_list(df_combined,"rewards",variable_name_list)
+    f_list_resource_wastages = get_interpolating_functions_list(df_combined,"resource_wastages",variable_name_list)
+    
+    error_dict = dict({"pred_tt":[],"error_prc_tt":[],"error_abs_tt":[],"pred_rew":[],"error_prc_rew":[],"error_abs_rew":[],"pred_rw":[],"error_prc_rw":[],"error_abs_rw":[]})
+    for index, row in df_to_test.iterrows():        
+        
+        real_v_tt,real_v_rew,real_v_rw = row["train_times"], row["rewards"],row["resource_wastages"]
+        simu_v_tt = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times,
+                                                row["max_episodes"],
+                                                row["max_iterations"],
+                                                row["batch_size"],
+                                                row["datasize_lenght"],
+                                                row["learning_rate"],
+                                                row["max_update_epochs"])   
+
+        simu_v_rew = calculate_objectives_score("rewards",corr_arr_rewards,f_list_rewards,
+                                                row["max_episodes"],
+                                                row["max_iterations"],
+                                                row["batch_size"],
+                                                row["datasize_lenght"],
+                                                row["learning_rate"],
+                                                row["max_update_epochs"])   
+
+        simu_v_rw = calculate_objectives_score("resource_wastages",corr_arr_resource_wastages,f_list_resource_wastages,
+                                                row["max_episodes"],
+                                                row["max_iterations"],
+                                                row["batch_size"],
+                                                row["datasize_lenght"],
+                                                row["learning_rate"],
+                                                row["max_update_epochs"])   
+
+        error_dict["pred_tt"].append(round(simu_v_tt,3))
+        error_dict["error_prc_tt"].append(round(abs(1 - (simu_v_tt/real_v_tt))*100,0))
+        error_dict["error_abs_tt"].append(round(simu_v_tt - real_v_tt,3))
+        error_dict["pred_rew"].append(round(simu_v_rew,3))
+        error_dict["error_prc_rew"].append(round(abs(1 - (simu_v_rew/real_v_rew))*100,0))
+        error_dict["error_abs_rew"].append(round(simu_v_rew - real_v_rew,3))
+        error_dict["pred_rw"].append(round(simu_v_rw,3))
+        error_dict["error_prc_rw"].append(round(abs(1 - (simu_v_rw/real_v_rw))*100,0))
+        error_dict["error_abs_rw"].append(round(simu_v_rw - real_v_rw,3))
+
+    for key,value in error_dict.items():
+        df_to_test[key] = value
+
+    return df_to_test
 
 def plot_simulated_obj_function(df,objective,variable_name_list):
 
@@ -571,31 +634,31 @@ def lots_of_plots(df,variable_name_list):
     plot_simulated_obj_function(df,"rewards",variable_name_list) #must provide big dataset
     plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
 
-    print_real_vs_simulated_error(df,"train_times",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
-    print("Corelation between train_times and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"train_times",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    # print("Corelation between train_times and variables:" + str(corr_arr))
 
 
-    print_real_vs_simulated_error(df,"rewards",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    print("Corelation between rewards and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"rewards",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    # print("Corelation between rewards and variables:" + str(corr_arr))
 
-    print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
-    corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
-    print("Corelation between resource_wastages and variables:" + str(corr_arr))
+    # print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
+    # corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # print("Corelation between resource_wastages and variables:" + str(corr_arr))
 
 
-    get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    # get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
 
-    ##################################################
-    interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
-    interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
-    interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
+    # ##################################################
+    # interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
+    # interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
+    # interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
 
-    visualize_boxplots_of_objective_base_on_all_variables(df,"train_times",variable_name_list)
-    visualize_boxplots_of_objective_base_on_all_variables(df,"rewards",variable_name_list)
-    visualize_boxplots_of_objective_base_on_all_variables(df,"resource_wastages",variable_name_list)
+    # visualize_boxplots_of_objective_base_on_all_variables(df,"train_times",variable_name_list)
+    # visualize_boxplots_of_objective_base_on_all_variables(df,"rewards",variable_name_list)
+    # visualize_boxplots_of_objective_base_on_all_variables(df,"resource_wastages",variable_name_list)
 
     print("finished plotting")
 #def save_front_df(front,pop_size, mutation_prob, mutation_distr_i,crossover_prob,crossover_distr_i):
@@ -607,19 +670,21 @@ if __name__ == "__main__":
     
     #create_file_small_DF_from_metrics()
     #create_file_DF_from_ALL_metrics("MOO_benchmark_DF","metrics_MOO_test") #TODO RUN#
-    create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
+    #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
-    #df = get_df_from_file()
-    #print(df)
-    df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
-    print(df_moo)
-    df_base = get_df_from_file('./results/BASE_benchmark_DF.pkl')
-    print(df_base)
-    #df = get_df_from_file('./results/small_panda_DF.pkl')
-
+    
+    df_moo = get_df_from_file('./results/MOO_benchmark_DF1.pkl')
+    
+    #print(df_moo)
+    # df_base = get_df_from_file('./results/BASE_benchmark_DF.pkl')
+    # print(df_base)
+    # old_df = get_df_from_file('./results/Initial_benchmarks_DF.pkl')
+    # print(old_df)
+    # whole_df = combine_dfs_to_file(old_df,df_moo,"Combined_bechmarks_DF")
+    df = get_df_from_file()
     ##TESTING DF
     
-    get_unique_hyperparams_df(df_moo)
+    #get_unique_hyperparams_df(df_moo)
 
     #print(df)
 
@@ -659,10 +724,37 @@ if __name__ == "__main__":
     #                                                             0.005, #learning rate#
     #                                                             5)
 
-    df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
-    print(df_moo)
-    #df_moo = df_moo.sort_values(by=['train_time'], ascending = False)
-    df_base = df_base.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
-    print(df_base)
+    # print("###############################################################################\n### GROUP BY DFS")
+    # df = df.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
+    # print(df)
+
+    # df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
+    # print(df_moo)
+    # #df_moo = df_moo.sort_values(by=['train_time'], ascending = False)
+    # df_base = df_base.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
+    # print(df_base)
+    #############################################
+    
    
+
+    df_moo = error_real_vs_simulated_to_DF(df,df_moo,variable_name_list)
+    
+    cols = df_moo.columns
+    df_moo[cols] = df_moo[cols].apply(pd.to_numeric, errors='coerce')
+    ##
+    df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
+    df_moo = df_moo.sort_values(by=['max_episodes','max_iterations','batch_size'], ascending = False)
+
+    for col in cols:
+        print(str(col) +" : "+ str(df_moo[col].mean()))
+
+    #print(df_moo)
+
+    filepath = 'results/MOO_ERR_DF.csv' 
+    df_moo= df_moo.drop(columns=['offload_configuration'])
+    df_moo.rename(columns = {"train_times": "train_t", "resource_wastages": "res_waste",  "rewards": "rew", "max_episodes": "max_ep","max_iterations": "max_it", "batch_size": "batch","datasize_lenght": "datas","learning_rate": "LR", "max_update_epochs":"ue","error_prc_tt": "er_prc_tt", "error_abs_tt":"er_abs_tt", "error_prc_rew":"er_prc_rew","error_abs_rew": "er_abs_rew","error_prc_rw": "er_prc_rw", "error_abs_rw": "er_abs_rw"}, inplace = True)
+    df_moo.to_csv(filepath)  
+   
+    
+
     print("FINIISH")
