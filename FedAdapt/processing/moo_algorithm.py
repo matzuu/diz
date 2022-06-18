@@ -43,22 +43,24 @@ def run_MAIN_moo():
     f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
 
     range_obj = [3] #[2,3]
-    range_evals = [10000] #[1000,2000,5000,10000]
+    range_evals = [5000] #[1000,2000,5000,10000]
     range_pop_size = [100] # [100,200,300,500,1000] # 1500 takes 2x 1000
-    range_mutation_p = [0.5] # [0.0,0.1,0.5,0.9,1.0]
-    range_mutation_dist_i = [5.0] # [5.0,20.0,100.0,400.0]
-    range_crossover_p = [1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]
-    range_crossover_dist_i = [90.0] #[40.0+] [5.0,20.0,100.0,400.0]
-    reliability_runs = 1
+    range_mutation_p = [0.5,0.6,0.7,0.8,0.9] # [0.0,0.1,0.5,0.9,1.0]
+    range_mutation_dist_i = [5.0,10.0] # [5.0,20.0,100.0,400.0]
+    range_crossover_p = [0.8,1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]
+    range_crossover_dist_i = [20.0,40.0,150.0,200.0] #[40.0+] [5.0,20.0,100.0,400.0]
+    reliability_runs = 2
 
     total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
 
     algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d5.pkl'
+    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d6.pkl'
     moo_df = get_df_from_file(file_path)
     print(moo_df)
     #moo_df = pd.DataFrame()
     run_counter = 0
+
+    
 
     class ZDT1_INT_TEST(IntegerProblem):
         """ Problem ZDT1.
@@ -170,7 +172,7 @@ def run_MAIN_moo():
                                         algorithm.run()
                                         front = get_non_dominated_solutions(algorithm.get_result())
 
-                                        hyper_volume = HyperVolume([10.0, 0.0, 10000.0]).compute([front[i].objectives for i in range(len(front))])
+                                        hyper_volume = HyperVolume([10.0, 10.0, 10000.0]).compute([front[i].objectives for i in range(len(front))])
 
                                         #inverse obj for rewards
                                         for idx, item in enumerate(front):
@@ -195,7 +197,7 @@ def run_MAIN_moo():
                                         from jmetal.lab.visualization import Plot
 
                                         # plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
-                                        # plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx), format='png')
+                                        # plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx+4)+"_", format='png')
 
                                         ############CONCAT THE DF
 
@@ -271,12 +273,12 @@ if __name__ == "__main__":
     run_MAIN_moo()
 
     # algorithm_name = "NSGAII"
-    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d2.pkl'
-    # moo_df2 = get_df_from_file(file_path)
-    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d1.pkl'
+    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d6.pkl'
     # moo_df = get_df_from_file(file_path)
+    # # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d1.pkl'
+    # # moo_df2 = get_df_from_file(file_path)
 
-    # moo_df = pd.concat([moo_df,moo_df2],ignore_index= True)
+    # # moo_df = pd.concat([moo_df,moo_df2],ignore_index= True)
     # print(moo_df)   
     # visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'])
     
