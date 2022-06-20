@@ -167,7 +167,7 @@ def visualize_boxplots_of_objective_based_on_variable(df,objective,variable):
     tick_label_list = []
     
     metrics_dict = get_values_of_column1_based_on_column2_criteria(df,objective,variable)
-
+    
     #Sort the dict
     float_vars_list = ['learning_rate','hypervolume','avg_crowding_distance','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx']
     if(variable in float_vars_list): 
@@ -669,11 +669,11 @@ if __name__ == "__main__":
     #create_file_DF_from_ALL_metrics() #
     
     #create_file_small_DF_from_metrics()
-    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF","metrics_MOO_test") #TODO RUN#
+    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
     #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
-    
-    df_moo = get_df_from_file('./results/MOO_benchmark_DF1.pkl')
+    # df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
+    df_moo = get_df_from_file('./results/MOO_benchmark_DF2.pkl')
     
     #print(df_moo)
     # df_base = get_df_from_file('./results/BASE_benchmark_DF.pkl')
@@ -750,7 +750,7 @@ if __name__ == "__main__":
 
     #print(df_moo)
 
-    filepath = 'results/MOO_ERR_DF.csv' 
+    filepath = 'results/MOO_ERR_DF2.csv' 
     df_moo= df_moo.drop(columns=['offload_configuration'])
     df_moo.rename(columns = {"train_times": "train_t", "resource_wastages": "res_waste",  "rewards": "rew", "max_episodes": "max_ep","max_iterations": "max_it", "batch_size": "batch","datasize_lenght": "datas","learning_rate": "LR", "max_update_epochs":"ue","error_prc_tt": "er_prc_tt", "error_abs_tt":"er_abs_tt", "error_prc_rew":"er_prc_rew","error_abs_rew": "er_abs_rew","error_prc_rw": "er_prc_rw", "error_abs_rw": "er_abs_rw"}, inplace = True)
     df_moo.to_csv(filepath)  

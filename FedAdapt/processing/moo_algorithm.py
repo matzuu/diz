@@ -1,28 +1,27 @@
+from re import M
 import sys
 import pandas as pd
 sys.path.append('../FedAdapt')
 import config
 
 from process_results import get_df_from_file, get_correlation_of_objective_for_all_variables, visualize_boxplots_of_objective_based_on_variable
+from jmetal.core.problem import  IntegerProblem
+from jmetal.core.solution import  IntegerSolution
+from math import sqrt, exp, pow, sin
 
+from jmetal.algorithm.multiobjective.nsgaii import NSGAII
+from jmetal.operator import BitFlipMutation, SPXCrossover
+from jmetal.operator.mutation import CompositeMutation , PolynomialMutation , IntegerPolynomialMutation
+from jmetal.operator.crossover import CompositeCrossover ,SBXCrossover , IntegerSBXCrossover
+from jmetal.problem.multiobjective.unconstrained import MixedIntegerFloatProblem
+from jmetal.problem import ZDT1
+from jmetal.util.solution import print_function_values_to_file, print_variables_to_file, get_non_dominated_solutions
+from jmetal.util.termination_criterion import StoppingByEvaluations
+from jmetal.algorithm.multiobjective.smpso import SMPSO
+from jmetal.util.archive import CrowdingDistanceArchive
+from jmetal.core.quality_indicator import HyperVolume
 
-def run_MAIN_moo():
-
-    from jmetal.core.problem import  IntegerProblem
-    from jmetal.core.solution import  IntegerSolution
-    from math import sqrt, exp, pow, sin
-
-    from jmetal.algorithm.multiobjective.nsgaii import NSGAII
-    from jmetal.operator import BitFlipMutation, SPXCrossover
-    from jmetal.operator.mutation import CompositeMutation , PolynomialMutation , IntegerPolynomialMutation
-    from jmetal.operator.crossover import CompositeCrossover ,SBXCrossover , IntegerSBXCrossover
-    from jmetal.problem.multiobjective.unconstrained import MixedIntegerFloatProblem
-    from jmetal.problem import ZDT1
-    from jmetal.util.solution import print_function_values_to_file, print_variables_to_file, get_non_dominated_solutions
-    from jmetal.util.termination_criterion import StoppingByEvaluations
-    from jmetal.algorithm.multiobjective.smpso import SMPSO
-    from jmetal.util.archive import CrowdingDistanceArchive
-    from jmetal.core.quality_indicator import HyperVolume
+def run_MAIN_moo():    
 
     from process_results import get_df_from_file, calculate_objectives_score, get_interpolating_functions_list,get_correlation_of_objective_for_all_variables 
     #GLOBALS
@@ -43,21 +42,21 @@ def run_MAIN_moo():
     f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
 
     range_obj = [3] #[2,3]
-    range_evals = [5000] #[1000,2000,5000,10000]
-    range_pop_size = [100] # [100,200,300,500,1000] # 1500 takes 2x 1000
-    range_mutation_p = [0.5,0.6,0.7,0.8,0.9] # [0.0,0.1,0.5,0.9,1.0]
-    range_mutation_dist_i = [5.0,10.0] # [5.0,20.0,100.0,400.0]
-    range_crossover_p = [0.8,1.0] # [0.8, 0.9, 1.0] [0.0,0.1,0.5,0.9,1.0]
-    range_crossover_dist_i = [20.0,40.0,150.0,200.0] #[40.0+] [5.0,20.0,100.0,400.0]
+    range_evals = [10000] #[5000]
+    range_pop_size = [100] # [100] # 1500 takes 2x 1000
+    range_mutation_p = [0.3] # [0.7]
+    range_mutation_dist_i = [150.0] # [5.0]
+    range_crossover_p = [0.9] # [1.0]
+    range_crossover_dist_i = [400.0] #[60.0]]
+    range_crowding_distance = [1000] # []
     reliability_runs = 2
 
-    total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs
+    total_runs =len(range_obj) * len(range_evals) * len(range_pop_size) * len(range_mutation_p) * len(range_mutation_dist_i) * len(range_crossover_p) * len(range_crossover_dist_i) * reliability_runs * len(range_crowding_distance)
 
-    algorithm_name = "NSGAII"
-    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d6.pkl'
+    algorithm_name = "SMPSO"
+    file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d8.pkl'
     moo_df = get_df_from_file(file_path)
     print(moo_df)
-    #moo_df = pd.DataFrame()
     run_counter = 0
 
     
@@ -138,101 +137,110 @@ def run_MAIN_moo():
                         for mutation_distr_i in range_mutation_dist_i:
                             for crossover_prob in range_crossover_p:
                                 for crossover_distr_i in range_crossover_dist_i:
-                                    for rel_idx in range(reliability_runs):
-                                        offspring_size = pop_size
+                                    for crowding_distance_v in range_crowding_distance:
+                                        for rel_idx in range(reliability_runs):
+                                            offspring_size = pop_size
 
-                                        run_counter += 1
-                                        if run_counter % 10 == 1:
-                                            print("## Progress: "+ str(run_counter) + "/" + str(total_runs))                                    
+                                            run_counter += 1
+                                            if run_counter % 10 == 1:
+                                                print("## Progress: "+ str(run_counter) + "/" + str(total_runs))                                    
 
-                                        problem = ZDT1_INT_TEST(obj_nr)
+                                            problem = ZDT1_INT_TEST(obj_nr)
 
-                                        algorithm = NSGAII(
-                                            problem=problem,
-                                            population_size=pop_size,
-                                            offspring_population_size=offspring_size,
-                                            mutation=IntegerPolynomialMutation(probability=mutation_prob/ problem.number_of_variables, distribution_index=mutation_distr_i),
-                                            crossover=IntegerSBXCrossover(probability=crossover_prob, distribution_index=crossover_distr_i),
-                                            termination_criterion=StoppingByEvaluations(max_evaluations=max_evals)
-                                        )
-                                        algorithm_name = "NSGAII"
+                                            if algorithm_name == "NSGAII":
+                                                algorithm = NSGAII(
+                                                    problem=problem,
+                                                    population_size=pop_size,
+                                                    offspring_population_size=offspring_size,
+                                                    mutation=IntegerPolynomialMutation(probability=mutation_prob/ problem.number_of_variables, distribution_index=mutation_distr_i),
+                                                    crossover=IntegerSBXCrossover(probability=crossover_prob, distribution_index=crossover_distr_i),
+                                                    termination_criterion=StoppingByEvaluations(max_evaluations=max_evals)
+                                                )
+                                                
+                                            elif algorithm_name == "SMPSO":
+                                                algorithm = SMPSO(
+                                                problem=problem,
+                                                swarm_size=pop_size,
+                                                mutation=IntegerPolynomialMutation(probability=mutation_prob / problem.number_of_variables, distribution_index=mutation_distr_i),
+                                                leaders=CrowdingDistanceArchive(crowding_distance_v), #try bigger crowding distance
+                                                termination_criterion=StoppingByEvaluations(max_evaluations=max_evals)
+                                                )
+                                                
+                                            else:
+                                                print("SPECIFY AN ALGORITHM: NSGAII or SMPSO")
+                                                return
 
-                                        # algorithm = SMPSO(
-                                        # problem=problem,
-                                        # swarm_size=pop_size,
-                                        # mutation=IntegerPolynomialMutation(probability=mutation_prob / problem.number_of_variables, distribution_index=mutation_distr_i),
-                                        # leaders=CrowdingDistanceArchive(1000), #try bigger crowding distance
-                                        # termination_criterion=StoppingByEvaluations(max_evaluations=max_evals)
-                                        # )
-                                        # algorithm_name = "SMPSO"
+                                            label_name = algorithm_name +" " + str(obj_nr)+"d "+ str(max_evals)+"e "+str(pop_size)+"p "+str(mutation_prob) +"mp "+str(mutation_distr_i) +"md "+str(crossover_prob) +"cp "+str(crossover_distr_i) + "cd"
 
-                                        label_name = algorithm_name +" " + str(obj_nr)+"d "+ str(max_evals)+"e "+str(pop_size)+"p "+str(mutation_prob) +"mp "+str(mutation_distr_i) +"md "+str(crossover_prob) +"cp "+str(crossover_distr_i) + "cd"
+                                            print("### Alg running with params: " + label_name)
+                                            algorithm.run()
+                                            front = get_non_dominated_solutions(algorithm.get_result())
 
-                                        print("### Alg running with params: " + label_name)
-                                        algorithm.run()
-                                        front = get_non_dominated_solutions(algorithm.get_result())
+                                            hyper_volume = HyperVolume([10.0, 10.0, 10000.0]).compute([front[i].objectives for i in range(len(front))])
 
-                                        hyper_volume = HyperVolume([10.0, 10.0, 10000.0]).compute([front[i].objectives for i in range(len(front))])
+                                            #inverse obj for rewards
+                                            for idx, item in enumerate(front):
+                                                item.objectives[1] = - item.objectives[1] # Rewards are inversed in computation because NSGA2 can only minimize, not maximize, revert them back
+                                                front[idx] = item
 
-                                        #inverse obj for rewards
-                                        for idx, item in enumerate(front):
-                                            item.objectives[1] = - item.objectives[1] # Rewards are inversed in computation because NSGA2 can only minimize, not maximize, revert them back
-                                            front[idx] = item
+                                            #Sort the front
+                                            if obj_nr == 2:
+                                                front.sort(key= lambda x: (x.objectives[0],x.objectives[1]))
+                                            elif obj_nr == 3:
+                                                front.sort(key= lambda x: (x.objectives[0],x.objectives[1],x.objectives[2]))
+                                            
+                                            front,avg_crowd_d = set_crowding_distance(front)
+                                            # Save results to file
+                                            # print_function_values_to_file(front, "FUN" + label_name)
+                                            # print_variables_to_file(front, "VAR" + label_name)
 
-                                        #Sort the front
-                                        if obj_nr == 2:
-                                            front.sort(key= lambda x: (x.objectives[0],x.objectives[1]))
-                                        elif obj_nr == 3:
-                                            front.sort(key= lambda x: (x.objectives[0],x.objectives[1],x.objectives[2]))
-                                        
-                                        front,avg_crowd_d = set_crowding_distance(front)
-                                        # Save results to file
-                                        # print_function_values_to_file(front, "FUN" + label_name)
-                                        # print_variables_to_file(front, "VAR" + label_name)
+                                            #print(f"Algorithm: {algorithm.get_name()}")
+                                            #print(f"Problem: {problem.get_name()}")
+                                            print(f"Computing time: {round(algorithm.total_computing_time,3)}")
 
-                                        #print(f"Algorithm: {algorithm.get_name()}")
-                                        #print(f"Problem: {problem.get_name()}")
-                                        print(f"Computing time: {round(algorithm.total_computing_time,3)}")
+                                            from jmetal.lab.visualization import Plot
 
-                                        from jmetal.lab.visualization import Plot
+                                            plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
+                                            plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx)+"_", format='png')
 
-                                        # plot_front = Plot(title='Pareto front approximation', axis_labels=['Train time', 'Rewards' , 'Resource Wastage'])
-                                        # plot_front.plot(front, label=label_name, filename=label_name + " R"+ str(rel_idx+4)+"_", format='png')
+                                            ############CONCAT THE DF
 
-                                        ############CONCAT THE DF
-
-                                        current_run_df = pd.DataFrame({'algorithm': [algorithm_name],
-                                                                        'objective_number': [obj_nr],
-                                                                        'evaluations': [max_evals],
-                                                                        'population': [pop_size] ,
-                                                                        'mutation_probability': [mutation_prob],
-                                                                        'mutation_dist_idx' : [mutation_distr_i],
-                                                                        'crossover_probability': [crossover_prob],
-                                                                        'crossover_dist_idx' : [crossover_distr_i],
-                                                                        'hypervolume' : [round(hyper_volume,5)],
-                                                                        'avg_crowding_distance' : [round(avg_crowd_d,5)]
-                                                                        })
-                                        
-                                        moo_df = pd.concat([moo_df,current_run_df],ignore_index= True)
+                                            current_run_df = pd.DataFrame({'algorithm': [algorithm_name],
+                                                                            'objective_number': [obj_nr],
+                                                                            'evaluations': [max_evals],
+                                                                            'population': [pop_size] ,
+                                                                            'mutation_probability': [mutation_prob],
+                                                                            'mutation_dist_idx' : [mutation_distr_i],
+                                                                            'crossover_probability': [crossover_prob],
+                                                                            'crossover_dist_idx' : [crossover_distr_i],
+                                                                            'crowding_distance' : [crowding_distance_v],
+                                                                            'hypervolume' : [round(hyper_volume,2)],
+                                                                            'avg_crowding_distance' : [round(avg_crowd_d,2)]                                                                            
+                                                                            })
+                                            
+                                            moo_df = pd.concat([moo_df,current_run_df],ignore_index= True)
 
 
-                                        ####################save front variables
-                                        list_variables = []
-                                        counter_skip = 0
-                                        for sol in front:
-                                            max_iter_number =  sol.variables[3]/ ( 5 * sol.variables[2] )
-                                            if sol.variables[1] <= max_iter_number: #So that the training cna run; minimum batch/dataset/iter size
-                                                counter_skip += 1
-                                                if counter_skip % 5 == 0:
-                                                    counter_skip = 0
-                                                    list_variables.append(sol.variables)
+                                            ####################save front variables
+                                            list_variables = []
+                                            counter_skip = 0
+                                            for sol in front:
+                                                max_iter_number =  sol.variables[3]/ ( 5 * sol.variables[2] )
+                                                if sol.variables[1] <= max_iter_number: #So that the training cna run; minimum batch/dataset/iter size
+                                                    counter_skip += 1
+                                                    if counter_skip % 5 == 0:
+                                                        counter_skip = 0
+                                                        aux_variables = [int(x) for x in sol.variables]
+                                                        aux_variables[3] = int(aux_variables[3]/1000)*1000
+                                                        list_variables.append(aux_variables)
+
 
 
 
     print(list_variables)
     
     moo_df.to_pickle(file_path)
-    print(moo_df)
+    #print(moo_df)
     print("FINISH WITH JMETAL")
 
 def set_crowding_distance(front):
@@ -256,7 +264,7 @@ def set_crowding_distance(front):
     #tread edge cases S[0], S[n]
 
 def combine_duplicate_rows_of_dataframe(moo_df):
-    moo_df = moo_df.groupby(['algorithm','objective_number','evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'],as_index=False).mean()
+    moo_df = moo_df.groupby(['algorithm','objective_number','evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx','crowding_distance'],as_index=False).mean()
     moo_df = moo_df.sort_values(by=['hypervolume'], ascending = False)
     return moo_df
 
@@ -272,15 +280,15 @@ if __name__ == "__main__":
     
     run_MAIN_moo()
 
-    # algorithm_name = "NSGAII"
-    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d6.pkl'
+    # algorithm_name = "SMPSO"
+    # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d8.pkl'
     # moo_df = get_df_from_file(file_path)
     # # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d1.pkl'
     # # moo_df2 = get_df_from_file(file_path)
 
     # # moo_df = pd.concat([moo_df,moo_df2],ignore_index= True)
     # print(moo_df)   
-    # visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx'])
+    # visualize_boxplots(moo_df,'hypervolume',['evaluations','population','mutation_probability','mutation_dist_idx','crossover_probability','crossover_dist_idx','crowding_distance'])
     
     
     print("FINISH")
