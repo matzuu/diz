@@ -324,10 +324,17 @@ def calculate_objectives_score(objective, corr_arr, f_list ,v_max_episodes = 10,
     if objective == "rewards":
         bias = [0.1,10,5,1,1,0.5]
         final_bias = -5.5
-
     if objective == "resource_wastages":
         bias = [1,1,5,1,1,1]
         final_bias = 80
+
+    #ORIG
+    # if objective == "train_times":
+    #     bias = [0.1, 10, 1, 1, 0.1, 0.1]
+    #     final_bias = 0
+    # if objective == "rewards":
+    #     bias = [0.1,10,5,1,1,0.5]
+    #     final_bias = 0
     w_max_episodes = corr_arr[0] * bias[0]
     w_max_iterations = corr_arr[1] * bias[1]
     w_batch_size = corr_arr[2] * bias[2]
@@ -669,7 +676,7 @@ if __name__ == "__main__":
     #create_file_DF_from_ALL_metrics() #
     
     #create_file_small_DF_from_metrics()
-    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
+    create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
     #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
     # df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')

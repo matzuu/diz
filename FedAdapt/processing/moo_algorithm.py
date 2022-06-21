@@ -278,7 +278,7 @@ def visualize_boxplots(moo_df,name_of_value_for_boxplots,list_of_column_names):
 ######################################
 if __name__ == "__main__":
     
-    run_MAIN_moo()
+    # run_MAIN_moo()
 
     # algorithm_name = "SMPSO"
     # file_path = config.home + './results/df_MOO_'+ algorithm_name + '_3d8.pkl'
