@@ -1,3 +1,4 @@
+from fileinput import filename
 import pickle #
 import matplotlib.pyplot as plt
 import numpy as np
@@ -283,7 +284,7 @@ def interpolate_and_plot_all_variables(df,objective,variable_name_list):
         f = interp1d(X_variable_vals, Y_obj_expected_values)
         f2 = interp1d(X_variable_vals, Y_obj_expected_values, kind='cubic') #NEED AT LEAST 4 POINTS
         
-        xnew = np.linspace(min(X_variable_vals), max(X_variable_vals), num=50, endpoint=True)
+        xnew = np.linspace(min(X_variable_vals), max(X_variable_vals), num=100, endpoint=True)
         ##############################################
         ##PLOTTING############
 
@@ -293,9 +294,6 @@ def interpolate_and_plot_all_variables(df,objective,variable_name_list):
         ax = fig.add_subplot(111)
         ax.plot(X_variable_vals, Y_obj_expected_values, 'o', xnew, f(xnew), '-', xnew , f2(xnew), '--')
 
-        #ax.set_xticklabels()
-        ax.set_xlabel(variable)
-        ax.set_ylabel(objective)
 
         ax.grid()
 
@@ -303,9 +301,22 @@ def interpolate_and_plot_all_variables(df,objective,variable_name_list):
         #plt.plot(X_variable_vals, Y_obj_expected_values, 'o', xnew, f(xnew), '-', xnew , f2(xnew), '--')
         #plt.legend(['data', 'linear'], loc='best')
         plt.legend(['data', 'linear', 'cubic'], loc='best') 
-        plt.xlabel(variable)
-        plt.ylabel(objective)
-        plt.show()
+
+        ['max_episodes',
+                   'max_iterations' ,
+                   'batch_size',
+                   'datasize_lenght',
+                   'learning_rate',
+                   'max_update_epochs'] 
+        var_dict ={"max_episodes":"Episodes nr.", "max_iterations":"Iterations nr.", 'batch_size': "Batch size", 'datasize_lenght':'Dataset size', 'learning_rate':"Learning rate",'max_update_epochs':"Max update epochs"}
+        dict_title =  {"train_times":"Train Times", "rewards": "Rewards", "resource_wastages":"Resource Wastages"}
+        dict_units = {"train_times":" (seconds)", "rewards": " ", "resource_wastages":" Wasted Resource Units"}
+        title = "Interpolating function for "+dict_title[objective] + ", influenced by " + var_dict[variable]
+        plt.title(title)
+        plt.xlabel(var_dict[variable])
+        plt.ylabel(dict_title[objective] + dict_units[objective])
+        #plt.show()
+        plt.savefig("images/"+ title+".png", format="png", dpi=1000)
 
 def calculate_objectives_score(objective, corr_arr, f_list ,v_max_episodes = 10, v_max_iterations = 5, v_batch_size = 100, v_datasize_lenght = 50000, v_learning_rate = 0.01, v_max_update_epochs = 10) -> float:
     # variable_name_list =  ['max_episodes',
@@ -583,7 +594,7 @@ def error_real_vs_simulated_to_DF(df_combined,df_to_test,variable_name_list):##T
 
     return df_to_test
 
-def plot_simulated_obj_function(df,objective,variable_name_list):
+def plot_simulated_obj_function_NOT_Interp(df,objective,variable_name_list):
 
     f_list = get_interpolating_functions_list(df,objective,variable_name_list)
     corr_arr = get_correlation_of_objective_for_all_variables(df,objective,variable_name_list)
@@ -591,6 +602,7 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
     lower_bound = [1,1,1,1000,1,1]
     upper_bound = [100,75,500,50000,200,50]
 
+    
     for var in variable_name_list:
         i = variable_name_list.index(var)
         x_list = range(lower_bound[i],upper_bound[i],max(1,int(upper_bound[i]/100)))
@@ -601,16 +613,22 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
         for x in x_list:
             if var == "max_episodes":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_max_episodes=x))
+                var_title = "Episodes nr."
             elif var == "max_iterations":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_max_iterations=x))
+                var_title = "Iterations nr."
             elif var == "batch_size":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_batch_size=x))
+                var_title = "Batch size"
             elif var == "datasize_lenght":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_datasize_lenght=x))
+                var_title = "Dataset size"
             elif var == "learning_rate":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_learning_rate=x))
+                var_title= "Learning Rate"
             elif var == "max_update_epochs":
                 y_list.append(calculate_objectives_score(objective,corr_arr,f_list,v_max_update_epochs=x))
+                var_title = "Max update epochs"
         #START PLOTTING  like X, F(X)  ; for x in variable names (ep,it,batch ...)
 
         fig = plt.figure(figsize =(10, 7))
@@ -620,8 +638,14 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
         ax.plot(x_list, y_list)
 
         #ax.set_xticklabels()
-        ax.set_xlabel(var)
-        ax.set_ylabel(objective)
+        dict_title =  {"train_times":"Train Times", "rewards": "Rewards", "resource_wastages":"Resource Wastages"}
+        dict_units = {"train_times":" (seconds)", "rewards": " ", "resource_wastages":" Wasted Resource Units"}
+        # ax.set_xlabel(var_title)
+        # ax.set_ylabel(dict_title[objective])
+
+        
+        title = "Prediction score function for "+dict_title[objective] + ", influenced by " + var_title
+        ax.set_title(title)
 
         ax.grid()
 
@@ -629,39 +653,128 @@ def plot_simulated_obj_function(df,objective,variable_name_list):
         #plt.plot(X_variable_vals, Y_obj_expected_values, 'o', xnew, f(xnew), '-', xnew , f2(xnew), '--')
         #plt.legend(['data', 'linear'], loc='best')
         #plt.legend(['data', 'linear', 'cubic'], loc='best') 
-        plt.xlabel(var)
-        plt.ylabel(objective)
-        plt.show()
+        plt.xlabel(var_title)
+        plt.ylabel(dict_title[objective] + dict_units[objective])
+        #plt.show()
+        plt.savefig("images/"+ title+".png", format="png", dpi=1000)
 
     print("DONE")
 
+def plot_actuall_results_three_dim(df, labels, filename: str = None, format: str = 'png'):
+        """ Plot any arbitrary number of fronts in 3D.
+
+        :param fronts: List of fronts (containing solutions).
+        :param labels: List of fronts title (if any).
+        :param filename: Output filename.
+        """
+        
+        fig = plt.figure()
+        fig.suptitle(labels[0]+" final results", fontsize=16)
+
+        
+        ax = fig.add_subplot(111, projection='3d')
+
+        x_list = df["train_times"].tolist()
+        y_list = df["rewards"].tolist()
+        print(max(y_list))
+        z_list = df["resource_wastages"].tolist() 
+
+        RGB_list = []
+        r_max = max(x_list)
+        g_max = max(y_list)
+        b_max = max(z_list)    
+        r_min = min(x_list)
+        g_min = min(y_list)
+        b_min = min(z_list) 
+
+        for j in range(len(x_list)): # (val - min) / (max - min) * 255 = Color_value
+            r_val = (x_list[j] - r_min)/ max((r_max - r_min),1)
+            g_val = (y_list[j] - g_min)/ max((g_max - g_min),1)
+            b_val = (z_list[j] - b_min)/ max((b_max - b_min),1)
+            RGB_list.append([r_val,g_val,b_val])
+
+        
+        #max = 100 50   50 / 100 * 255 == 1/2 * 255 == 127
+        #(75 - 50) / (100 - 50) * 255 == 25 / 50 * 255 = 127
+        #val - min / max - min * 255
+        
+        ax.scatter(x_list,y_list,z_list,c=RGB_list,edgecolors = 'black')
+
+        # ax.scatter([s.objectives[0] for s in fronts[i]],
+        #            [s.objectives[1] for s in fronts[i]],
+        #            [s.objectives[2] for s in fronts[i]])
+
+        if labels:
+            ax.set_title(labels[0])
+
+
+        ax.relim()
+        ax.autoscale_view(True, True, True)
+        ax.view_init(elev=10.0, azim=10.0)
+        ax.locator_params(nbins=4)
+
+        ax.set_xlabel(labels[1])
+        ax.set_ylabel(labels[2])
+        ax.set_zlabel(labels[3])
+
+        if filename:
+            ax.view_init(elev=10.0, azim=10.0)
+            plt.savefig("images/"+filename+"_1" + '.' + format, format=format, dpi=1000)
+            ax.view_init(elev=10.0, azim=80.0)
+            plt.savefig("images/"+filename+"_2" + '.' + format, format=format, dpi=1000)
+            ax.view_init(elev=80.0, azim=10.0)
+            plt.savefig("images/"+filename+"_3" + '.' + format, format=format, dpi=1000)
+        else:
+            plt.show()
+
+        plt.close(fig=fig)
+
+def plot_bar_plots_for_Correlation(corr_array,objective):
+
+    fig = plt.figure()
+    names = ["Ep. nr.", "It. nr.", "Batch", "Dataset size", "LR", "Max UE"]
+    dict_title =  {"train_times":"Train Times", "rewards": "Rewards", "resource_wastages":"Resource Wastages"}
+    dict_units = {"train_times":" (seconds)", "rewards": " ", "resource_wastages":" Wasted Resource Units"}
+    vals = corr_array
+    plt.bar(names,vals)
+    title = "Correlation between "+dict_title[objective] + " and variables"
+    plt.title(title)
+    #plt.xlabel(var_title)
+    plt.ylabel(dict_title[objective] + " correlation")
+    #plt.show()
+    plt.savefig("images/"+ title+".png", format="png", dpi=1000)
+
 def lots_of_plots(df,variable_name_list):
 
-    plot_simulated_obj_function(df,"train_times",variable_name_list)
-    plot_simulated_obj_function(df,"rewards",variable_name_list) #must provide big dataset
-    plot_simulated_obj_function(df,"resource_wastages",variable_name_list)
+    plot_simulated_obj_function_NOT_Interp(df,"train_times",variable_name_list)
+    plot_simulated_obj_function_NOT_Interp(df,"rewards",variable_name_list) #must provide big dataset
+    plot_simulated_obj_function_NOT_Interp(df,"resource_wastages",variable_name_list)
+    ##^ DONE
 
-    # print_real_vs_simulated_error(df,"train_times",variable_name_list)    
+    # print_real_vs_simulated_error_initial_runs(df,"train_times",variable_name_list)    
     # corr_arr = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
     # print("Corelation between train_times and variables:" + str(corr_arr))
 
 
-    # print_real_vs_simulated_error(df,"rewards",variable_name_list)    
+    # print_real_vs_simulated_error_initial_runs(df,"rewards",variable_name_list)    
     # corr_arr = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
     # print("Corelation between rewards and variables:" + str(corr_arr))
 
-    # print_real_vs_simulated_error(df,"resource_wastages",variable_name_list)    
+    # print_real_vs_simulated_error_initial_runs(df,"resource_wastages",variable_name_list)    
     # corr_arr = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
     # print("Corelation between resource_wastages and variables:" + str(corr_arr))
 
-
-    # get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    # get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # corr_array = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
+    # plot_bar_plots_for_Correlation(corr_array, "train_times")
+    # corr_array = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
+    # plot_bar_plots_for_Correlation(corr_array, "rewards")
+    # corr_array = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
+    # plot_bar_plots_for_Correlation(corr_array, "resource_wastages")
 
     # ##################################################
-    # interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
-    # interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
-    # interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
+    interpolate_and_plot_all_variables(df,"train_times",variable_name_list)
+    interpolate_and_plot_all_variables(df,"rewards",variable_name_list)
+    interpolate_and_plot_all_variables(df,"resource_wastages",variable_name_list)
 
     # visualize_boxplots_of_objective_base_on_all_variables(df,"train_times",variable_name_list)
     # visualize_boxplots_of_objective_base_on_all_variables(df,"rewards",variable_name_list)
@@ -669,6 +782,26 @@ def lots_of_plots(df,variable_name_list):
 
     print("finished plotting")
 #def save_front_df(front,pop_size, mutation_prob, mutation_distr_i,crossover_prob,crossover_distr_i):
+
+def df_to_csv(df_moo, filename):
+    cols = df_moo.columns
+    df_moo[cols] = df_moo[cols].apply(pd.to_numeric, errors='coerce')
+    print(df_moo)
+
+    ##
+    df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
+    df_moo = df_moo.sort_values(by=['train_times','rewards','resource_wastages'], ascending = False)
+
+    for col in cols:
+        print(str(col) +" : "+ str(df_moo[col].mean()))
+
+    #print(df_moo)
+
+    filepath = 'results/' + filename + '.sv' 
+    df_moo= df_moo.drop(columns=['offload_configuration'])
+    df_moo.rename(columns = {"train_times": "train_t", "resource_wastages": "res_waste",  "rewards": "rew", "max_episodes": "max_ep","max_iterations": "max_it", "batch_size": "batch","datasize_lenght": "datas","learning_rate": "LR", "max_update_epochs":"ue","error_prc_tt": "er_prc_tt", "error_abs_tt":"er_abs_tt", "error_prc_rew":"er_prc_rew","error_abs_rew": "er_abs_rew","error_prc_rw": "er_prc_rw", "error_abs_rw": "er_abs_rw"}, inplace = True)
+    df_moo.to_csv(filepath)  
+
 #################################################################################################
 #####################################  MAIN  ####################################################
 #################################################################################################
@@ -676,18 +809,18 @@ if __name__ == "__main__":
     #create_file_DF_from_ALL_metrics() #
     
     #create_file_small_DF_from_metrics()
-    create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
+    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
     #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
-    # df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
+    #df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
     df_moo = get_df_from_file('./results/MOO_benchmark_DF2.pkl')
     
     #print(df_moo)
-    # df_base = get_df_from_file('./results/BASE_benchmark_DF.pkl')
-    # print(df_base)
-    # old_df = get_df_from_file('./results/Initial_benchmarks_DF.pkl')
-    # print(old_df)
-    # whole_df = combine_dfs_to_file(old_df,df_moo,"Combined_bechmarks_DF")
+    #df_moo = get_df_from_file('./results/BASE_benchmark_DF.pkl')
+    
+    #old_df = get_df_from_file( what name was it?)
+    #print(old_df)
+    #whole_df = combine_dfs_to_file(old_df,df_moo,"Combined_bechmarks_DF")
     df = get_df_from_file()
     ##TESTING DF
     
@@ -702,34 +835,10 @@ if __name__ == "__main__":
                    'learning_rate',
                    'max_update_epochs'] 
 
-    #lots_of_plots(df,variable_name_list)
+    lots_of_plots(df,variable_name_list)
 
 
     ############################################################
-    
-    # corr_arr_train_times = get_correlation_of_objective_for_all_variables(df,"train_times",variable_name_list)
-    # corr_arr_rewards = get_correlation_of_objective_for_all_variables(df,"rewards",variable_name_list)
-    # corr_arr_resource_wastages = get_correlation_of_objective_for_all_variables(df,"resource_wastages",variable_name_list)
-
-    # f_list_train_times = get_interpolating_functions_list(df,"train_times",variable_name_list)
-    # f_list_rewards = get_interpolating_functions_list(df,"rewards",variable_name_list)
-    # f_list_resource_wastages = get_interpolating_functions_list(df,"resource_wastages",variable_name_list)
-
-    # simul_value = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
-    #                                                             39,
-    #                                                             2,
-    #                                                             150,
-    #                                                             1566,
-    #                                                             0.005, #learning rate#
-    #                                                             5)
-
-    # simul_value2 = calculate_objectives_score("train_times",corr_arr_train_times,f_list_train_times, 
-    #                                                             40,
-    #                                                             1,
-    #                                                             150,
-    #                                                             24026,
-    #                                                             0.005, #learning rate#
-    #                                                             5)
 
     # print("###############################################################################\n### GROUP BY DFS")
     # df = df.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean()
@@ -744,23 +853,15 @@ if __name__ == "__main__":
     
    
 
-    df_moo = error_real_vs_simulated_to_DF(df,df_moo,variable_name_list)
-    
-    cols = df_moo.columns
-    df_moo[cols] = df_moo[cols].apply(pd.to_numeric, errors='coerce')
-    ##
-    df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
-    df_moo = df_moo.sort_values(by=['max_episodes','max_iterations','batch_size'], ascending = False)
+    # df_moo = error_real_vs_simulated_to_DF(df,df_moo,variable_name_list)
+    # csv_filename = 'MOO_df_base_DF2'
 
-    for col in cols:
-        print(str(col) +" : "+ str(df_moo[col].mean()))
+    # #df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
+    # plot_actuall_results_three_dim(df_moo,["NSGAII","Train times","Rewards","Resources wastages"],csv_filename)
 
-    #print(df_moo)
+    # df_to_csv(df_moo,csv_filename)
 
-    filepath = 'results/MOO_ERR_DF2.csv' 
-    df_moo= df_moo.drop(columns=['offload_configuration'])
-    df_moo.rename(columns = {"train_times": "train_t", "resource_wastages": "res_waste",  "rewards": "rew", "max_episodes": "max_ep","max_iterations": "max_it", "batch_size": "batch","datasize_lenght": "datas","learning_rate": "LR", "max_update_epochs":"ue","error_prc_tt": "er_prc_tt", "error_abs_tt":"er_abs_tt", "error_prc_rew":"er_prc_rew","error_abs_rew": "er_abs_rew","error_prc_rw": "er_prc_rw", "error_abs_rw": "er_abs_rw"}, inplace = True)
-    df_moo.to_csv(filepath)  
+       
    
     
 

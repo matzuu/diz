@@ -58,7 +58,6 @@ def first_get_entropy_attempt():
 
 
 
-
 if __name__ == "__main__":
     dict1 = unpickle(config.dataset_path + "cifar-10-batches-py/data_batch_1")
     
