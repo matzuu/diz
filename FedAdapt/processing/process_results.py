@@ -121,9 +121,9 @@ def get_step_metrics_from_run(RL_res1,max_episodes,max_iterations,batch_size,dat
                    })
 
     return current_run_df
-def create_file_DF_from_ALL_metrics(filename = "Combined_bechmarks_DF",folder = "metrics"):
+def create_file_DF_from_ALL_metrics(filename_new = "Combined_bechmarks_DF",folder = "metrics"):
     whole_df = create_df_from_X_RUNS(folder)
-    file_path = config.home + './results/'+ filename +'.pkl'
+    file_path = config.home + './results/'+ filename_new +'.pkl'
     whole_df.to_pickle(file_path)
     print(whole_df)
 
@@ -790,14 +790,14 @@ def df_to_csv(df_moo, filename):
 
     ##
     df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
-    df_moo = df_moo.sort_values(by=['train_times','rewards','resource_wastages'], ascending = False)
+    df_moo = df_moo.sort_values(by=['train_times','resource_wastages','rewards'], ascending = True)
 
     for col in cols:
         print(str(col) +" : "+ str(df_moo[col].mean()))
 
     #print(df_moo)
 
-    filepath = 'results/' + filename + '.sv' 
+    filepath = 'results/' + filename + '.csv' 
     df_moo= df_moo.drop(columns=['offload_configuration'])
     df_moo.rename(columns = {"train_times": "train_t", "resource_wastages": "res_waste",  "rewards": "rew", "max_episodes": "max_ep","max_iterations": "max_it", "batch_size": "batch","datasize_lenght": "datas","learning_rate": "LR", "max_update_epochs":"ue","error_prc_tt": "er_prc_tt", "error_abs_tt":"er_abs_tt", "error_prc_rew":"er_prc_rew","error_abs_rew": "er_abs_rew","error_prc_rw": "er_prc_rw", "error_abs_rw": "er_abs_rw"}, inplace = True)
     df_moo.to_csv(filepath)  
@@ -809,21 +809,23 @@ if __name__ == "__main__":
     #create_file_DF_from_ALL_metrics() #
     
     #create_file_small_DF_from_metrics()
-    #create_file_DF_from_ALL_metrics("MOO_benchmark_DF2","metrics_MOO_test2") #TODO RUN#
+    create_file_DF_from_ALL_metrics("MOO_benchmark_DF_SMPSO","metrics_SMPSO") #TODO RUN#
     #create_file_DF_from_ALL_metrics(filename="BASE_benchmark_DF",folder="metrics_RL_BASE") #TODO RUN#
 
-    #df_moo = get_df_from_file('./results/MOO_benchmark_DF.pkl')
-    df_moo = get_df_from_file('./results/MOO_benchmark_DF2.pkl')
+    df_moo = get_df_from_file('./results/MOO_benchmark_DF_SMPSO.pkl')
+    #df_moo = get_df_from_file('./results/MOO_benchmark_DF2.pkl')
+    
     
     #print(df_moo)
     #df_moo = get_df_from_file('./results/BASE_benchmark_DF.pkl')
     
-    #old_df = get_df_from_file( what name was it?)
+    #old_df = get_df_from_file()
     #print(old_df)
     #whole_df = combine_dfs_to_file(old_df,df_moo,"Combined_bechmarks_DF")
     df = get_df_from_file()
-    ##TESTING DF
-    
+    ##TESTING DF   
+    #df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
+    print(df_moo)
     #get_unique_hyperparams_df(df_moo)
 
     #print(df)
@@ -835,7 +837,7 @@ if __name__ == "__main__":
                    'learning_rate',
                    'max_update_epochs'] 
 
-    lots_of_plots(df,variable_name_list)
+    #lots_of_plots(df,variable_name_list)
 
 
     ############################################################
@@ -853,13 +855,13 @@ if __name__ == "__main__":
     
    
 
-    # df_moo = error_real_vs_simulated_to_DF(df,df_moo,variable_name_list)
-    # csv_filename = 'MOO_df_base_DF2'
+    df_moo = error_real_vs_simulated_to_DF(df,df_moo,variable_name_list)
+    csv_filename = 'MOO_df_base_DF3_SMPSO'
 
-    # #df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
-    # plot_actuall_results_three_dim(df_moo,["NSGAII","Train times","Rewards","Resources wastages"],csv_filename)
+    #df_moo = df_moo.groupby(['max_episodes','max_iterations','batch_size','datasize_lenght','learning_rate','max_update_epochs'],as_index=False).mean().round(3)
+    #plot_actuall_results_three_dim(df_moo,["NSGAII","Train times","Rewards","Resources wastages"],csv_filename)
 
-    # df_to_csv(df_moo,csv_filename)
+    df_to_csv(df_moo,csv_filename)
 
        
    
