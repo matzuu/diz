@@ -94,10 +94,22 @@ def scope2():
                    'datasize_lenght',
                    'learning_rate',
                    'max_update_epochs'] 
-    variables_list = [[81, 2, 134, 22000, 100, 3], [49, 1, 159, 23000, 150, 23], [71, 1, 135, 21000, 133, 17], [59, 2, 159, 27000, 83, 5], [61, 2, 136, 23000, 100, 12], [78, 1, 158, 
-18000, 138, 45], [60, 1, 137, 17000, 147, 16], [81, 1, 156, 19000, 143, 4], [54, 2, 139, 18000, 147, 9], [59, 1, 156, 23000, 94, 23], [58, 2, 156, 18000, 128, 16], [65, 1, 141, 23000, 92, 11]]
+    variables_list = [[ 1 ,     1 ,   30 ,22698 ,0.005 ,  5 ],
+                    [2 ,     1 ,   30 , 4226 ,0.005 ,  5],
+                    [1 ,     1 ,   30 ,23756 ,0.005 ,  5],
+                    [8 ,     1 ,   30 ,20725 ,0.005 ,  5],
+                    [1 ,     1 ,   30 , 1898 ,0.005 ,  5],
+                    [30 ,     1 ,   30 ,25151 ,0.005 ,  5 ],
+                    [30 ,     1 ,   30 ,17882 ,0.005 ,  5 ],
+                    [16 ,     1 ,   30 , 4759 ,0.005 ,  5],
+                    [30 ,     1 ,   30 , 1000 ,0.005 ,  5],
+                    [24 ,     1 ,   30 , 2575 ,0.005 ,  5],
+                    [28 ,     1 ,   30 , 3383 ,0.005 ,  5],
+                    [28 ,     2 ,   30 , 3031 ,0.005 ,  5],
+                    [1 ,     2 ,   29 , 1000 ,0.005 ,  5 ],
+                    [1 ,     2 ,    1 , 1000 ,0.005 ,  5],
+                    [1 ,     2 ,  232 ,25403 ,0.006]]
 
-    
     print("Total number of expected benchmark runs: " + str(reliability_runs * len(variables_list)))
     time.sleep(2)
     ################
@@ -106,7 +118,7 @@ def scope2():
     run_counter = 0
     total_runs = len(variables_list)
     for combination in variables_list:
-        for idx_r in range(reliability_runs):
+        for idx_r in range(10,reliability_runs+10):
             #[e,i,b,d,l,m]
             run_counter +=1
             if (run_counter % 5 == 0):
@@ -119,9 +131,9 @@ def scope2():
                 config.iteration = new_iter_dict
                 config.B = combination[2]
                 config.N = combination[3]
-                config.LR = combination[4]/1000 
+                config.LR = combination[4]#/1000 
                 config.max_update_epochs = combination[5]
-                run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4]/1000)+ "_M"+str(combination[5])+"_R"+str(idx_r)
+                run_identifier = "MOO_E"+str(combination[0])+"_I"+str(combination[1])+"_B"+str(combination[2])+"_D"+str(combination[3])+"_L"+str(combination[4])+ "_M"+str(combination[5])+"_R"+str(idx_r)
                 print("Run metrics "+ run_identifier)
                 
 
